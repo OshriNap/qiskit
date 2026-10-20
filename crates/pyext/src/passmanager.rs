@@ -192,8 +192,7 @@ pub struct PyPass(Option<PyPassInner>);
 impl PyPass {
     /// Take the inner pass out of the handle.
     ///
-    /// [`PyPassInner`] owns a boxed exposer, so it cannot be cloned out and has to be moved.
-    /// Callers must pass a freshly constructed handle, which makes the failure unreachable.
+    /// Callers should pass a freshly constructed handle to avoid an error return.
     fn steal(slf: &Bound<Self>) -> PyResult<PyPassInner> {
         slf.borrow_mut()
             .0
@@ -249,12 +248,10 @@ static STAGED_TASK_LIST: ImportOnceCell =
     ImportOnceCell::new("qiskit.passmanager", "StagedTaskList");
 
 /// Build the native task that corresponds to a `qiskit.passmanager` object.
-///
-/// The set of [`Task`] variants is closed, so the accepted Python types are exactly `Pass`,
-/// `TaskList` and `StagedTaskList`.  This is the inverse of [`task_to_py`].
 fn task_from_py(ob: &Bound<PyAny>) -> PyResult<Task> {
     let py = ob.py();
     if ob.is_instance(PASS.get_bound(py))? {
+        // Python owns the interpretation of the `Pass` protocol, including any
         // Python owns the interpretation of the `Pass` protocol, including any
         // calling-convention resolution, and hands back a `PyPass` handle.
         let handle = NATIVE_PASS.get_bound(py).call1((ob,))?;
