@@ -18,9 +18,9 @@ from ddt import ddt, data, unpack
 
 from qiskit import transpile
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.library import IntegerComparator
+from qiskit.circuit.library import IntegerComparator, IntegerComparatorGate
 from qiskit.synthesis.arithmetic import synth_integer_comparator_2s, synth_integer_comparator_greedy
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Operator, Statevector
 from test import QiskitTestCase
 
 
@@ -108,6 +108,62 @@ class TestIntegerComparator(QiskitTestCase):
         with self.subTest(msg="updating geq"):
             comp.geq = False
             self.assertComparisonIsCorrect(comp, 3, 2, False)
+
+    @data(1, 2, 3, 4)
+    def test_greedy_operator(self, num_state_qubits):
+        """Check both target states and phases, including boundary and fractional thresholds."""
+        limit = 2**num_state_qubits
+        columns = np.arange(2 * limit)
+        values = [*range(-1, limit + 2), 0.1, 1.1, limit - 0.1]
+        for value in values:
+            for geq in (False, True):
+                matches = columns % limit >= value
+                if not geq:
+                    matches = ~matches
+                rows = columns ^ (matches.astype(int) * limit)
+                expected = np.zeros((2 * limit, 2 * limit))
+                expected[rows, columns] = 1
+                for constructor in (synth_integer_comparator_greedy, IntegerComparatorGate):
+                    with self.subTest(value=value, geq=geq, constructor=constructor):
+                        circuit = constructor(num_state_qubits, value, geq)
+                        self.assertEqual(Operator(circuit), Operator(expected))
+
+    def test_greedy_numpy_width(self):
+        """The synthesis function also accepts NumPy integer widths."""
+        for value in (5, 8, 13):
+            with self.subTest(value=value):
+                self.assertEqual(
+                    synth_integer_comparator_greedy(np.int64(4), value),
+                    synth_integer_comparator_greedy(4, value),
+                )
+
+    @data(1, 4, 8, 16)
+    def test_greedy_gate_count(self, num_state_qubits):
+        """Comparison synthesis needs at most n controlled X gates and one target X."""
+        limit = 2**num_state_qubits
+        for value in (0, 1, limit // 2 - 1, limit // 2, limit // 2 + 1, limit - 1, limit):
+            for geq in (False, True):
+                with self.subTest(value=value, geq=geq):
+                    circuit = synth_integer_comparator_greedy(num_state_qubits, value, geq)
+                    self.assertEqual(circuit.num_qubits, num_state_qubits + 1)
+                    self.assertLessEqual(circuit.size(), num_state_qubits + 1)
+
+    @data((4, 5, 42), (5, 13, 100), (6, 32, 1))
+    @unpack
+    def test_greedy_default_hls_level3(self, num_state_qubits, value, cx_bound):
+        """The default HLS retains the reduction at level 3 without clean auxiliary qubits."""
+        circuit = QuantumCircuit(num_state_qubits + 1)
+        circuit.append(IntegerComparatorGate(num_state_qubits, value), circuit.qubits)
+        synthesized = transpile(
+            circuit,
+            basis_gates=["u", "cx"],
+            optimization_level=3,
+            qubits_initially_zero=False,
+            seed_transpiler=42,
+        )
+        self.assertEqual(synthesized.num_qubits, circuit.num_qubits)
+        self.assertLessEqual(synthesized.count_ops().get("cx", 0), cx_bound)
+        self.assertEqual(Operator.from_circuit(synthesized), Operator(circuit))
 
 
 if __name__ == "__main__":

@@ -315,7 +315,7 @@ Integer comparators
       - :math:`n - 1` clean
     * - ``"noaux"``
       - :class:`~.IntComparatorSynthesisNoAux`
-      - flip the target controlled on all :math:`O(2^l)` allowed integer values
+      - group accepted values into at most :math:`n` binary prefixes
       - none
     * - ``"default"``
       - :class:`~.IntComparatorSynthesisDefault`
@@ -1790,7 +1790,7 @@ class IntComparatorSynthesisDefault(HighLevelSynthesisPlugin):
 
 
 class IntComparatorSynthesisNoAux(HighLevelSynthesisPlugin):
-    """A potentially exponentially expensive comparison w/o auxiliary qubits."""
+    """An integer comparison without auxiliary qubits."""
 
     def run(self, high_level_object, coupling_map=None, target=None, qubits=None, **options):
         return synth_integer_comparator_greedy(

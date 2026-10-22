@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Integer comparator based on an exponential number of multi-controlled gates."""
+"""Integer comparator based on disjoint intervals of control states."""
 
 import numpy as np
 
@@ -20,14 +20,12 @@ from qiskit.circuit import QuantumCircuit
 def synth_integer_comparator_greedy(
     num_state_qubits: int, value: int, geq: bool = True
 ) -> QuantumCircuit:
-    r"""Implement an integer comparison based on value-by-value comparison.
+    r"""Implement an integer comparison without auxiliary qubits.
 
-    For ``value`` smaller than ``2 ** (num_state_qubits - 1)`` this circuit implements
-    ``value`` multi-controlled gates with control states 0, 1, ..., ``value - 1``, such that
-    the target qubit is flipped if the qubit state represents any of the allowed values.
-    For ``value`` larger than that, ``geq`` is flipped. This implementation can
-    require an exponential number of gates. If auxiliary qubits are available, the implementation
-    provided by :func:`.synth_integer_comparator_2s` is more efficient.
+    Partition the accepted values into disjoint, aligned power-of-two intervals.
+    Each interval fixes a binary prefix and is implemented by one multi-controlled
+    X gate on those prefix bits. This uses at most ``num_state_qubits`` controlled
+    X gates, with an optional X gate to complement the comparison.
 
     Args:
         num_state_qubits: The number of qubits encoding the value to compare to.
@@ -47,8 +45,7 @@ def synth_integer_comparator_greedy(
 
         return circuit
 
-    # make sure to always choose the comparison where we have to place less than
-    # (2 ** n)/2 MCX gates
+    # Choose the comparison with fewer accepted values, complementing the target if needed.
     value = int(np.ceil(value))
     if (value < 2 ** (num_state_qubits - 1) and geq) or (
         value > 2 ** (num_state_qubits - 1) and not geq
@@ -56,12 +53,16 @@ def synth_integer_comparator_greedy(
         geq = not geq
         circuit.x(num_state_qubits)
 
-    if geq:
-        accepted_values = range(value, 2**num_state_qubits)
-    else:
-        accepted_values = range(value)
-
-    for accepted_value in accepted_values:
-        circuit.mcx(list(range(num_state_qubits)), num_state_qubits, ctrl_state=accepted_value)
+    lower, upper = (value, 2**num_state_qubits) if geq else (0, value)
+    while lower < upper:
+        # An aligned power-of-two interval fixes only its high-order bits.
+        free_bits = (lower & -lower).bit_length() - 1 if lower else num_state_qubits
+        free_bits = min(free_bits, int(upper - lower).bit_length() - 1)
+        circuit.mcx(
+            list(range(free_bits, num_state_qubits)),
+            num_state_qubits,
+            ctrl_state=lower >> free_bits,
+        )
+        lower += 1 << free_bits
 
     return circuit

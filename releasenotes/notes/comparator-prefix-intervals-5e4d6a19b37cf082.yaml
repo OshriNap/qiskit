@@ -1,0 +1,8 @@
+performance:
+  - |
+    :func:`.synth_integer_comparator_greedy` now groups accepted values into
+    intervals with a common binary prefix, using at most ``num_state_qubits``
+    controlled X gates and an optional X gate instead of enumerating each
+    accepted value. This also reduces the cost of :class:`.IntegerComparatorGate`
+    synthesis when the default high-level synthesis selects the implementation
+    without auxiliary qubits.
