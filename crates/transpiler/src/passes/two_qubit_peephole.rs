@@ -31,6 +31,7 @@ use qiskit_circuit::operations::{Operation, OperationRef, Param, PythonOperation
 use qiskit_circuit::packed_instruction::{PackedInstruction, PackedOperation};
 use qiskit_circuit::{BlocksMode, Qubit, VarsMode};
 
+use super::commutation_cancellation::find_five_cx_cancellations;
 use super::unitary_synthesis::Direction2q;
 use crate::passes::unitary_synthesis::{
     Approximation, QpuConstraint, TwoQSynthesisResult, fidelity_2q_sequence, synthesize_2q_matrix,
@@ -59,18 +60,18 @@ pub fn py_two_qubit_unitary_peephole_optimize(
     approximation_degree: Option<f64>,
 ) -> PyResult<Option<PyDAGCircuit>> {
     let dag_ref = dag.try_read()?;
-    let result = py.detach(move || {
-        two_qubit_unitary_peephole_optimize_analysis(dag_ref, target, approximation_degree)
+    let reduced = py.detach(|| {
+        cancel_five_cx_before_synthesis(dag_ref, target, |dag| Python::attach(|_| dag.clone()))
+    });
+    let input = reduced.as_ref().unwrap_or(dag_ref);
+    let result = py.detach(|| {
+        two_qubit_unitary_peephole_optimize_analysis(input, target, approximation_degree)
     })?;
-    let Some(result) = result else {
-        return Ok(None);
+    let output = match result {
+        Some(result) => two_qubit_unitary_peephole_optimize_apply(input, result)?,
+        None => reduced,
     };
-    Ok(
-        two_qubit_unitary_peephole_optimize_apply(dag_ref, result)?.map(|out_dag| {
-            // Preserve metadata
-            PyDAGCircuit::from_dagcircuit_with_cloned_metadata(out_dag, dag)
-        }),
-    )
+    Ok(output.map(|out_dag| PyDAGCircuit::from_dagcircuit_with_cloned_metadata(out_dag, dag)))
 }
 
 /// A non-python entry-point to the pass function.
@@ -84,11 +85,40 @@ pub fn two_qubit_unitary_peephole_optimize(
     target: &Target,
     approximation_degree: Option<f64>,
 ) -> PyResult<Option<DAGCircuit>> {
-    let result = two_qubit_unitary_peephole_optimize_analysis(dag, target, approximation_degree)?;
+    let reduced = cancel_five_cx_before_synthesis(dag, target, Clone::clone);
+    let input = reduced.as_ref().unwrap_or(dag);
+    let result = two_qubit_unitary_peephole_optimize_analysis(input, target, approximation_degree)?;
     let Some(result) = result else {
-        return Ok(None);
+        return Ok(reduced);
     };
-    two_qubit_unitary_peephole_optimize_apply(dag, result)
+    two_qubit_unitary_peephole_optimize_apply(input, result)
+}
+
+fn cancel_five_cx_before_synthesis(
+    dag: &DAGCircuit,
+    target: &Target,
+    clone_dag: impl FnOnce(&DAGCircuit) -> DAGCircuit,
+) -> Option<DAGCircuit> {
+    // Expose two-qubit runs before collecting and synthesizing them. This uses
+    // the same deletion rule as CommutativeCancellation; it does not add a pass.
+    // Clone only on a match, retaining this function's read-only input contract.
+    let pairs = if target.operation_from_name("cx").is_some() {
+        find_five_cx_cancellations(dag)
+    } else {
+        Vec::new()
+    };
+    if pairs.is_empty() {
+        None
+    } else {
+        // The Python caller attaches while cloning Python-owned objects;
+        // the native caller needs no interpreter for its native-only DAG.
+        let mut reduced = clone_dag(dag);
+        for (first, last) in pairs {
+            reduced.remove_op_node(first);
+            reduced.remove_op_node(last);
+        }
+        Some(reduced)
+    }
 }
 
 fn score_sequence(
@@ -377,4 +407,48 @@ fn two_qubit_unitary_peephole_optimize_apply(
 pub fn two_qubit_peephole_mod(m: &Bound<PyModule>) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(py_two_qubit_unitary_peephole_optimize))?;
     Ok(())
+}
+
+#[cfg(all(test, not(miri)))]
+mod tests {
+    use super::*;
+    use qiskit_circuit::circuit_data::CircuitData;
+    use qiskit_circuit::operations::StandardGate;
+    use qiskit_util::IndexMap;
+    use smallvec::smallvec;
+
+    use crate::target::Qargs;
+
+    #[test]
+    fn five_cx_native_entry() {
+        let circuit = CircuitData::from_standard_gates(
+            3,
+            [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]
+                .map(|(a, b)| (StandardGate::CX, smallvec![], smallvec![Qubit(a), Qubit(b)])),
+            0.0.into(),
+        )
+        .unwrap();
+        let dag = DAGCircuit::from_circuit_data(&circuit, false, None, None).unwrap();
+        let mut target = Target::default();
+        target
+            .add_instruction(
+                StandardGate::CX.into(),
+                None,
+                None,
+                Some(IndexMap::from_iter([(0, 1), (1, 0), (2, 0)].map(
+                    |(a, b)| {
+                        (
+                            Qargs::Concrete(smallvec![PhysicalQubit(a), PhysicalQubit(b)]),
+                            None,
+                        )
+                    },
+                ))),
+            )
+            .unwrap();
+        let result = two_qubit_unitary_peephole_optimize(&dag, &target, Some(1.0))
+            .unwrap()
+            .unwrap();
+        assert_eq!(result.get_op_counts().get("cx"), Some(&3));
+        assert_eq!(dag.get_op_counts().get("cx"), Some(&5));
+    }
 }

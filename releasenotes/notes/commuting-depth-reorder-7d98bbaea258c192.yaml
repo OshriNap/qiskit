@@ -1,0 +1,7 @@
+---
+performance:
+  - |
+    :class:`.CommutativeCancellation`, when supplied with a target, can reduce
+    two-qubit depth by interchanging adjacent, exactly commuting CX and CZ gates.
+    The bounded reordering retains gate operands and physical connectivity and
+    only advances an interaction when no participating wire is delayed.

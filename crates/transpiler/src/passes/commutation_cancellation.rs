@@ -12,6 +12,12 @@
 
 use std::f64::consts::{FRAC_PI_2, FRAC_PI_4, PI};
 
+use fixedbitset::FixedBitSet;
+use rustworkx_core::petgraph::Direction;
+use rustworkx_core::petgraph::algo::toposort;
+use rustworkx_core::petgraph::stable_graph::NodeIndex;
+use rustworkx_core::petgraph::visit::{EdgeRef, NodeIndexable};
+
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 use pyo3::{Bound, PyResult, pyfunction, wrap_pyfunction};
@@ -24,7 +30,7 @@ use super::analyze_commutations;
 use crate::commutation_checker::{CommutationChecker, CommutationError};
 use approx::abs_diff_eq;
 use qiskit_circuit::Qubit;
-use qiskit_circuit::dag_circuit::{DAGCircuit, DAGError, NodeType, PyDAGCircuit};
+use qiskit_circuit::dag_circuit::{DAGCircuit, DAGError, NodeType, PyDAGCircuit, Wire};
 use qiskit_circuit::operations::{Operation, Param, StandardGate};
 use qiskit_synthesis::QiskitError;
 
@@ -107,18 +113,227 @@ struct CancellationSetKey {
 }
 
 #[pyfunction(name = "cancel_commutations")]
-#[pyo3(signature = (dag, commutation_checker, basis_gates=None, approximation_degree=1.))]
+#[pyo3(signature = (dag, commutation_checker, basis_gates=None, approximation_degree=1., *, cancel_cx5=false, reorder_for_depth=false))]
 fn py_cancel_commutations(
     py: Python<'_>,
     dag: &mut PyDAGCircuit,
     commutation_checker: &mut CommutationChecker,
     basis_gates: Option<Vec<String>>,
     approximation_degree: f64,
+    cancel_cx5: bool,
+    reorder_for_depth: bool,
 ) -> PyResult<()> {
     // Release the GIL, otherwise rayon workers deadlock when they need it for Python-defined gates.
     let dag = dag.try_write()?;
-    py.detach(|| cancel_commutations(dag, commutation_checker, basis_gates, approximation_degree))
-        .map_err(Into::into)
+    py.detach(|| -> Result<(), CommutationCancelError> {
+        cancel_commutations(dag, commutation_checker, basis_gates, approximation_degree)?;
+        if cancel_cx5 {
+            cancel_five_cx(dag);
+        }
+        if reorder_for_depth {
+            reduce_two_qubit_depth(dag)?;
+        }
+        Ok(())
+    })
+    .map_err(Into::into)
+}
+
+/// Delete the endpoints of a five-CX identity, without moving the middle gates.
+/// For distinct a, b, c: ABADB = BAD, where A=CX(a,b), B=CX(b,a),
+/// D=CX(c,a). This follows from ABA=BAB and BD=DB. Also recognize the
+/// reverse sequence and simultaneous reversal of every CX direction.
+fn cancel_five_cx(dag: &mut DAGCircuit) {
+    for (first, last) in find_five_cx_cancellations(dag) {
+        dag.remove_op_node(first);
+        dag.remove_op_node(last);
+    }
+}
+
+/// Find disjoint endpoint pairs without mutating the input DAG.
+pub(super) fn find_five_cx_cancellations(dag: &DAGCircuit) -> Vec<(NodeIndex, NodeIndex)> {
+    if dag.get_op_counts().get("cx").copied().unwrap_or(0) < 5
+        || dag.has_control_flow()
+        || dag.width() != dag.num_qubits() + dag.num_clbits()
+    {
+        return Vec::new();
+    }
+    let mut used = FixedBitSet::new();
+    let mut removals = Vec::new();
+    for index in 0..dag.num_qubits() {
+        let common = Qubit::new(index);
+        let mut nodes = [NodeIndex::new(0); 5];
+        let mut gates = [[common; 2]; 5];
+        let mut len = 0;
+        for node in dag.nodes_on_wire(Wire::Qubit(common)) {
+            let NodeType::Operation(inst) = &dag[node] else {
+                len = 0;
+                continue;
+            };
+            if used.contains(node.index()) || inst.op.try_standard_gate() != Some(StandardGate::CX)
+            {
+                len = 0;
+                continue;
+            }
+            if len == 5 {
+                nodes.rotate_left(1);
+                gates.rotate_left(1);
+                len = 4;
+            }
+            nodes[len] = node;
+            gates[len] = dag.get_qargs(inst.qubits).try_into().unwrap();
+            len += 1;
+            if len != 5 || !five_cx_identity(&gates) {
+                continue;
+            }
+            // The common wire is consecutive by construction. The other repeated
+            // wire must be consecutive too; the third wire occurs only once.
+            let other = if gates[0][0] == common {
+                gates[0][1]
+            } else {
+                gates[0][0]
+            };
+            let mut previous = None;
+            let mut consecutive = true;
+            for (&node, gate) in nodes.iter().zip(&gates) {
+                if !gate.contains(&other) {
+                    continue;
+                }
+                if let Some(prev) = previous {
+                    let next = dag
+                        .dag()
+                        .edges_directed(prev, Direction::Outgoing)
+                        .find(|edge| *edge.weight() == Wire::Qubit(other))
+                        .map(|edge| edge.target());
+                    if next != Some(node) {
+                        consecutive = false;
+                        break;
+                    }
+                }
+                previous = Some(node);
+            }
+            if !consecutive {
+                continue;
+            }
+            // Match against the original graph and reserve the whole window,
+            // including retained nodes. Stable graph indices can contain holes.
+            if used.is_empty() {
+                used.grow(dag.dag().node_bound());
+            }
+            for node in nodes {
+                used.insert(node.index());
+            }
+            removals.push((nodes[0], nodes[4]));
+            len = 0;
+        }
+    }
+    removals
+}
+
+fn five_cx_identity(g: &[[Qubit; 2]; 5]) -> bool {
+    fn forward(g: &[[Qubit; 2]; 5]) -> bool {
+        let [a, b] = g[0];
+        g[2] == [a, b]
+            && g[1] == [b, a]
+            && g[4] == [b, a]
+            && ((g[3][1] == a && g[3][0] != a && g[3][0] != b)
+                || (g[3][0] == b && g[3][1] != a && g[3][1] != b))
+    }
+    forward(g) || forward(&[g[4], g[3], g[2], g[1], g[0]])
+}
+
+/// Advance adjacent, exactly commuting CX/CZ gates without delaying any wire.
+/// For A(u,s) then B(s,v), swap only if input_depth(u) > max(input_depth(s),
+/// input_depth(v)). B finishes earlier, while A's finish time stays unchanged.
+/// One forward scan permits at most one interchange per visited operation.
+fn reduce_two_qubit_depth(dag: &mut DAGCircuit) -> Result<(), DAGError> {
+    if dag.has_control_flow()
+        || !dag.vars().is_empty()
+        || dag.get_op_counts().get("cx").copied().unwrap_or(0)
+            + dag.get_op_counts().get("cz").copied().unwrap_or(0)
+            < 2
+    {
+        return Ok(());
+    }
+    let num_qubits = dag.num_qubits();
+    let mut arrival = vec![0usize; num_qubits + dag.num_clbits()];
+    let mut tails = vec![None; num_qubits];
+    let mut before = vec![[0usize; 2]; dag.dag().node_bound()];
+    let mut ends = vec![0usize; dag.dag().node_bound()];
+    // Independent operations need no lexicographic ordering for the arrival times.
+    let order = toposort(dag.dag(), None).expect("DAGCircuit can't have a cycle");
+    for node in order {
+        let NodeType::Operation(inst) = &dag[node] else {
+            continue;
+        };
+        let qargs = dag.get_qargs(inst.qubits);
+        let cargs = dag.get_cargs(inst.clbits);
+        let gate = inst.op.try_standard_gate();
+        let pair = matches!(gate, Some(StandardGate::CX | StandardGate::CZ)).then(|| {
+            let qubits = [qargs[0], qargs[1]];
+            let inputs = [arrival[qubits[0].index()], arrival[qubits[1].index()]];
+            let previous = [tails[qubits[0].index()], tails[qubits[1].index()]];
+            (qubits, inputs, previous)
+        });
+        let finish = qargs
+            .iter()
+            .map(|q| arrival[q.index()])
+            .chain(cargs.iter().map(|c| arrival[num_qubits + c.index()]))
+            .max()
+            .unwrap_or(0)
+            + usize::from(qargs.len() == 2 && !inst.op.directive());
+        ends[node.index()] = finish;
+        for qubit in qargs {
+            arrival[qubit.index()] = finish;
+            tails[qubit.index()] = Some(node);
+        }
+        for clbit in cargs {
+            arrival[num_qubits + clbit.index()] = finish;
+        }
+        let Some((qubits, inputs, previous)) = pair else {
+            continue;
+        };
+        before[node.index()] = inputs;
+        for shared in 0..2 {
+            let Some(first) = previous[shared] else {
+                continue;
+            };
+            let first_inst = dag[first].unwrap_operation();
+            let first_gate = first_inst.op.try_standard_gate();
+            if !matches!(first_gate, Some(StandardGate::CX | StandardGate::CZ)) {
+                continue;
+            }
+            let args = dag.get_qargs(first_inst.qubits);
+            let common = qubits[shared];
+            let first_shared = usize::from(args[1] == common);
+            if args[1 - first_shared] == qubits[1 - shared] {
+                continue;
+            }
+            let commute = match (first_gate.unwrap(), gate.unwrap()) {
+                (StandardGate::CZ, StandardGate::CZ) => true,
+                (StandardGate::CX, StandardGate::CX) => first_shared == shared,
+                (StandardGate::CX, StandardGate::CZ) => first_shared == 0,
+                (StandardGate::CZ, StandardGate::CX) => shared == 0,
+                _ => unreachable!(),
+            };
+            let x = before[first.index()][1 - first_shared];
+            let y = before[first.index()][first_shared];
+            let z = inputs[1 - shared];
+            if !commute || x <= y.max(z) {
+                continue;
+            }
+            dag.swap_nodes(first, node)?;
+            let earlier_finish = y.max(z) + 1;
+            ends[node.index()] = earlier_finish;
+            before[node.index()][shared] = y;
+            before[first.index()][first_shared] = earlier_finish;
+            arrival[common.index()] = ends[first.index()];
+            tails[common.index()] = Some(first);
+            arrival[qubits[1 - shared].index()] = earlier_finish;
+            tails[qubits[1 - shared].index()] = Some(node);
+            break;
+        }
+    }
+    Ok(())
 }
 
 pub fn cancel_commutations(

@@ -36,6 +36,10 @@ class TwoQubitPeepholeOptimization(TransformationPass):
     fidelity, and finally if needed it picks the subcircuit with the fewest
     total gates.
 
+    For targets supporting CX, consecutive five-CX cancellation patterns are
+    reduced before collecting two-qubit blocks, exposing additional synthesis
+    opportunities in the same pass invocation.
+
     In case the target is overcomplete the pass will try all the
     decomposers supported for all the gates supported on a given qubit.
     The decomposition that has the best expected performance using the above

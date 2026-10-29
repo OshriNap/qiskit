@@ -1,0 +1,12 @@
+---
+features_transpiler:
+  - |
+    :class:`.CommutativeCancellation`, when supplied a target supporting CX,
+    can now remove the first and last gates of the consecutive pattern
+    ``CX(a,b), CX(b,a), CX(a,b), CX(c,a), CX(b,a)`` for distinct qubits,
+    including its time-reversed and direction-reversed forms. The remaining
+    three gates are retained in place, reducing the CX count by two without
+    increasing circuit depth.
+    :class:`.TwoQubitPeepholeOptimization` applies the same cancellation before
+    collecting two-qubit blocks, so newly exposed blocks can be synthesized in
+    the same pass invocation.

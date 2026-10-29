@@ -12,6 +12,7 @@
 
 """Gate cancellation pass testing"""
 
+import itertools
 import unittest
 
 import numpy as np
@@ -31,6 +32,134 @@ from test import QiskitTestCase, combine
 
 
 @ddt.ddt
+class TestCommutingDepthReorder(QiskitTestCase):
+    """Advance a commuting interaction without delaying another wire."""
+
+    def setUp(self):
+        super().setUp()
+        self.target = Target.from_configuration(
+            num_qubits=5, basis_gates=["cx", "cz", "rz", "sx", "x"]
+        )
+
+    @staticmethod
+    def example(first="cz", first_args=(0, 1), second="cz", second_args=(1, 2)):
+        circuit = QuantumCircuit(5, global_phase=0.3)
+        circuit.metadata = {"purpose": "depth reorder"}
+        circuit.cx(3, 4)
+        # Delay qubit 0 without introducing another commuting pair at the prefix.
+        if first == "cx" and first_args[1] == 0:
+            circuit.cz(4, 0)
+        else:
+            circuit.cx(4, 0)
+        getattr(circuit, first)(*first_args)
+        getattr(circuit, second)(*second_args)
+        return circuit
+
+    @ddt.data(
+        ("cz", (0, 1), "cz", (1, 2)),
+        ("cx", (0, 1), "cx", (2, 1)),
+        ("cx", (1, 0), "cx", (1, 2)),
+        ("cx", (1, 0), "cz", (1, 2)),
+        ("cz", (0, 1), "cx", (1, 2)),
+    )
+    def test_exact_commuting_pairs(self, gates):
+        circuit = self.example(*gates)
+        out = CommutativeCancellation(target=self.target)(circuit)
+        self.assertEqual(circuit.depth(lambda inst: len(inst.qubits) == 2), 4)
+        self.assertEqual(out.depth(lambda inst: len(inst.qubits) == 2), 3)
+        self.assertEqual(dict(out.count_ops()), dict(circuit.count_ops()))
+        self.assertEqual(out.metadata, circuit.metadata)
+        np.testing.assert_allclose(Operator(out).data, Operator(circuit).data, atol=1e-12)
+
+    def test_target_free_behavior_is_unchanged(self):
+        circuit = self.example()
+        self.assertEqual(CommutativeCancellation()(circuit), circuit)
+
+    @ddt.data(("cx", (0, 1), "cx", (1, 2)), ("cz", (0, 1), "cx", (2, 1)))
+    def test_noncommuting_pair_is_unchanged(self, gates):
+        circuit = self.example(*gates)
+        self.assertEqual(CommutativeCancellation(target=self.target)(circuit), circuit)
+
+    def test_no_slack_is_unchanged(self):
+        circuit = QuantumCircuit(5)
+        circuit.cz(0, 1)
+        circuit.cz(1, 2)
+        self.assertEqual(CommutativeCancellation(target=self.target)(circuit), circuit)
+
+    @ddt.data("barrier", "measure", "reset", "symbolic")
+    def test_boundaries(self, boundary):
+        circuit = QuantumCircuit(5, 1)
+        circuit.cx(3, 4)
+        circuit.cx(4, 0)
+        circuit.cz(0, 1)
+        if boundary == "barrier":
+            circuit.barrier(1)
+        elif boundary == "measure":
+            circuit.measure(1, 0)
+        elif boundary == "reset":
+            circuit.reset(1)
+        else:
+            circuit.rz(Parameter("theta"), 1)
+        circuit.cz(1, 2)
+        self.assertEqual(CommutativeCancellation(target=self.target)(circuit), circuit)
+
+    def test_sparse_node_indices(self):
+        circuit = self.example()
+        circuit.id(3)
+        dag = circuit_to_dag(circuit)
+        dag.remove_op_node(dag.op_nodes()[-1])
+        out = CommutativeCancellation(target=self.target).run(dag)
+        self.assertEqual(out.depth(), 3)
+
+    def test_disconnected_components_are_deterministic(self):
+        circuit = QuantumCircuit(10)
+        circuit.compose(self.example(), range(5), inplace=True)
+        circuit.compose(self.example(), range(5, 10), inplace=True)
+        target = Target.from_configuration(num_qubits=10, basis_gates=["cx", "cz"])
+        left = CommutativeCancellation(target=target).run(circuit_to_dag(circuit))
+        right = CommutativeCancellation(target=target).run(circuit_to_dag(circuit))
+        self.assertEqual(left.depth(), 3)
+        self.assertEqual(left.count_ops(), circuit.count_ops())
+        self.assertTrue(left.structurally_equal(right))
+
+    def test_control_flow_outer_dag_is_unchanged(self):
+        circuit = QuantumCircuit(5, 1)
+        circuit.compose(self.example(), inplace=True)
+        with circuit.if_test((circuit.clbits[0], True)):
+            circuit.x(0)
+        self.assertEqual(CommutativeCancellation(target=self.target)(circuit), circuit)
+
+    def test_indirect_dependency_is_unchanged(self):
+        """Do not swap a commuting pair if another path connects its operands."""
+        circuit = QuantumCircuit(5)
+        circuit.cx(3, 4)
+        circuit.cx(4, 0)
+        circuit.cz(0, 1)
+        circuit.cx(0, 2)
+        circuit.cz(1, 2)
+        self.assertEqual(CommutativeCancellation(target=self.target)(circuit), circuit)
+
+    def test_realtime_variables_are_unchanged(self):
+        circuit = self.example()
+        circuit.add_var("flag", False)
+        self.assertEqual(CommutativeCancellation(target=self.target)(circuit), circuit)
+
+    def test_five_cx_then_depth_reordering(self):
+        """Both rules act in one invocation, including after node removal."""
+        circuit = QuantumCircuit(5)
+        for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+            circuit.cx(*pair)
+        circuit.barrier()
+        circuit.compose(self.example(), inplace=True)
+        output = CommutativeCancellation(target=self.target)(circuit)
+        self.assertEqual(circuit.depth(lambda inst: len(inst.qubits) == 2), 9)
+        self.assertEqual(output.depth(lambda inst: len(inst.qubits) == 2), 6)
+        self.assertEqual(output.count_ops().get("cx", 0), circuit.count_ops()["cx"] - 2)
+        self.assertEqual(output.count_ops().get("cz", 0), circuit.count_ops()["cz"])
+        np.testing.assert_allclose(Operator(output).data, Operator(circuit).data, atol=1e-12)
+
+
+@ddt.ddt
 class TestCommutativeCancellation(QiskitTestCase):
     """Test the CommutativeCancellation pass."""
 
@@ -39,6 +168,125 @@ class TestCommutativeCancellation(QiskitTestCase):
         self.com_pass_ = CommutationAnalysis()
         self.pass_ = CommutativeCancellation()
         self.pset = self.pass_.property_set = PropertySet()
+
+    def test_five_cx_identity(self):
+        """All relabelings, time reversals and direction reversals delete only endpoints."""
+        target = Target.from_configuration(basis_gates=["u", "cx"], num_qubits=3)
+        seed = [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]
+        for reverse, transpose, perm in itertools.product(
+            (False, True), (False, True), itertools.permutations(range(3))
+        ):
+            with self.subTest(reverse=reverse, transpose=transpose, perm=perm):
+                seq = seed[::-1] if reverse else seed
+                seq = [(perm[b], perm[a]) if transpose else (perm[a], perm[b]) for a, b in seq]
+                circuit = QuantumCircuit(3, global_phase=0.3)
+                expected = QuantumCircuit(3, global_phase=0.3)
+                for index, pair in enumerate(seq):
+                    circuit.append(CXGate(label=str(index)), pair)
+                    if 0 < index < 4:
+                        expected.append(CXGate(label=str(index)), pair)
+                result = CommutativeCancellation(target=target)(circuit)
+                self.assertEqual(result, expected)
+                self.assertEqual([inst.operation.label for inst in result.data], ["1", "2", "3"])
+                np.testing.assert_allclose(
+                    Operator(result).data, Operator(circuit).data, atol=1e-14
+                )
+
+    def test_five_cx_scope(self):
+        """Keep target-free and non-CX-target behavior unchanged."""
+        circuit = QuantumCircuit(3)
+        for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+            circuit.cx(*pair)
+        for pass_ in (
+            CommutativeCancellation(),
+            CommutativeCancellation(basis_gates=["u", "cx"]),
+            CommutativeCancellation(
+                target=Target.from_configuration(basis_gates=["u", "cz"], num_qubits=3)
+            ),
+        ):
+            self.assertEqual(pass_(circuit), circuit)
+
+    def test_five_cx_blockers(self):
+        """Both repeated wires must be consecutive; a named custom gate is not a CX."""
+        target = Target.from_configuration(basis_gates=["u", "cx"], num_qubits=3)
+        for wire, kind in itertools.product((0, 1), ("h", "barrier", "reset", "measure", "custom")):
+            with self.subTest(wire=wire, kind=kind):
+                circuit = QuantumCircuit(3, 1)
+                for index, pair in enumerate([(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]):
+                    if kind == "custom" and index == 2:
+                        circuit.append(Gate("cx", 2, []), pair)
+                    else:
+                        circuit.cx(*pair)
+                    if index == 1 and kind != "custom":
+                        if kind == "measure":
+                            circuit.measure(wire, 0)
+                        else:
+                            getattr(circuit, kind)(wire)
+                self.assertEqual(CommutativeCancellation(target=target)(circuit), circuit)
+
+    def test_five_cx_sparse_nodes_and_independent_work(self):
+        """Holes from earlier cancellations and unrelated wire operations are safe."""
+        target = Target.from_configuration(basis_gates=["u", "cx"], num_qubits=4)
+        circuit = QuantumCircuit(4)
+        circuit.h(3)
+        circuit.h(3)
+        circuit.cx(0, 1)
+        circuit.cx(1, 0)
+        circuit.ry(Parameter("theta"), 3)
+        circuit.cx(0, 1)
+        circuit.cx(2, 0)
+        circuit.cx(1, 0)
+        result = CommutativeCancellation(target=target)(circuit)
+        self.assertEqual(result.count_ops(), {"cx": 3, "ry": 1})
+        np.testing.assert_allclose(
+            Operator(result.assign_parameters([0.7])).data,
+            Operator(circuit.assign_parameters([0.7])).data,
+            atol=1e-14,
+        )
+
+    def test_five_cx_overlapping_windows(self):
+        """Do not remove a shared endpoint twice in overlapping pattern candidates."""
+        target = Target.from_configuration(basis_gates=["u", "cx"], num_qubits=3)
+        circuit = QuantumCircuit(3)
+        seq = [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0), (0, 1), (1, 0), (2, 1), (0, 1)]
+        for pair in seq:
+            circuit.cx(*pair)
+        self.assertEqual(CommutativeCancellation()(circuit), circuit)
+        result = CommutativeCancellation(target=target)(circuit)
+        self.assertEqual(result.count_ops(), {"cx": 7})
+        np.testing.assert_allclose(Operator(result).data, Operator(circuit).data, atol=1e-14)
+
+    def test_five_cx_directed_target(self):
+        """The rewrite introduces no gates on unsupported directed couplings."""
+        target = Target(num_qubits=3)
+        target.add_instruction(CXGate(), {(0, 1): None, (1, 0): None, (2, 0): None})
+        circuit = QuantumCircuit(3)
+        for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+            circuit.cx(*pair)
+        result = CommutativeCancellation(target=target)(circuit)
+        self.assertEqual(result.count_ops(), {"cx": 3})
+        for inst in result.data:
+            self.assertTrue(
+                target.instruction_supported(
+                    "cx", tuple(result.find_bit(q).index for q in inst.qubits)
+                )
+            )
+
+    def test_five_cx_dynamic_outer_dag(self):
+        """The bounded rule skips outer DAGs with control flow or realtime variables."""
+        from qiskit.circuit.classical import expr, types
+
+        target = Target.from_configuration(basis_gates=["u", "cx"], num_qubits=3)
+        for variable in (False, True):
+            circuit = QuantumCircuit(
+                3, 1, inputs=[expr.Var.new("v", types.Bool())] if variable else []
+            )
+            for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+                circuit.cx(*pair)
+            if not variable:
+                with circuit.if_test((circuit.clbits[0], 1)):
+                    circuit.x(2)
+            self.assertEqual(CommutativeCancellation(target=target)(circuit), circuit)
 
     def test_all_gates(self):
         """Test all gates on 1 and 2 qubits

@@ -14,6 +14,7 @@
 Tests for the TwoQubitPeepholeOptimization transpiler pass.
 """
 
+import itertools
 import math
 import numpy as np
 import ddt
@@ -109,6 +110,83 @@ class FakeBackend5QV2(GenericBackendV2):
 @ddt.ddt
 class TestTwoQubitPeepholeOptimization(QiskitTestCase):
     """Test TwoQubitPeepholeOptimization."""
+
+    def test_five_cx_cancellation_before_synthesis(self):
+        """Retain cancellation even if the subsequent synthesis has no improvement."""
+        target = Target.from_configuration(basis_gates=["u", "cx"], num_qubits=3)
+        pattern = [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]
+        for reverse, transpose, perm in itertools.product(
+            (False, True), (False, True), itertools.permutations(range(3))
+        ):
+            with self.subTest(reverse=reverse, transpose=transpose, perm=perm):
+                seq = pattern[::-1] if reverse else pattern
+                seq = [(perm[b], perm[a]) if transpose else (perm[a], perm[b]) for a, b in seq]
+                circuit = QuantumCircuit(3, global_phase=0.3, metadata={"source": "five_cx"})
+                expected = QuantumCircuit(3, global_phase=0.3, metadata=circuit.metadata)
+                for index, pair in enumerate(seq):
+                    circuit.append(CXGate(label=str(index)), pair)
+                    if 0 < index < 4:
+                        expected.append(CXGate(label=str(index)), pair)
+                dag = circuit_to_dag(circuit)
+                result = TwoQubitPeepholeOptimization(target).run(dag)
+                self.assertEqual(dag, circuit_to_dag(circuit))
+                self.assertEqual(dag_to_circuit(result), expected)
+                self.assertEqual(result.metadata, circuit.metadata)
+                self.assertEqual(
+                    [n.op.label for n in result.topological_op_nodes()], ["1", "2", "3"]
+                )
+                np.testing.assert_allclose(
+                    Operator(dag_to_circuit(result)).data, Operator(circuit).data, atol=1e-14
+                )
+
+    def test_five_cx_cancellation_with_custom_measurement(self):
+        """The on-match DAG copy safely retains Python-owned operations."""
+
+        class CustomMeasure(Measure):
+            """Python-owned instruction outside the cancellation window."""
+
+        target = Target.from_configuration(basis_gates=["u", "cx", "measure"], num_qubits=4)
+        circuit = QuantumCircuit(4, 1)
+        for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+            circuit.cx(*pair)
+        circuit.append(CustomMeasure(), [3], [0])
+        dag = circuit_to_dag(circuit)
+        result = dag_to_circuit(TwoQubitPeepholeOptimization(target).run(dag))
+        self.assertEqual(dag, circuit_to_dag(circuit))
+        self.assertEqual(result.count_ops(), {"cx": 3, "measure": 1})
+        self.assertIsInstance(result.data[-1].operation, CustomMeasure)
+
+    def test_five_cx_cancellation_directed_target(self):
+        """Removing the endpoints never requires the reverse of a supported edge."""
+        target = Target(num_qubits=3)
+        target.add_instruction(CXGate(), {(0, 1): None, (1, 0): None, (2, 0): None})
+        circuit = QuantumCircuit(3)
+        for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+            circuit.cx(*pair)
+        result = TwoQubitPeepholeOptimization(target)(circuit)
+        self.assertEqual(result.count_ops(), {"cx": 3})
+        for inst in result.data:
+            self.assertTrue(
+                target.instruction_supported(
+                    "cx", tuple(result.find_bit(q).index for q in inst.qubits)
+                )
+            )
+
+    def test_five_cx_cancellation_symbolic_surroundings(self):
+        """Symbolic operations outside the window survive and remain equivalent."""
+        target = Target.from_configuration(basis_gates=["rz", "u", "cx"], num_qubits=4)
+        angle = Parameter("theta")
+        circuit = QuantumCircuit(4)
+        circuit.rz(angle, 3)
+        for pair in [(0, 1), (1, 0), (0, 1), (2, 0), (1, 0)]:
+            circuit.cx(*pair)
+        result = TwoQubitPeepholeOptimization(target)(circuit)
+        self.assertEqual(result.count_ops(), {"cx": 3, "rz": 1})
+        np.testing.assert_allclose(
+            Operator(result.assign_parameters([0.7])).data,
+            Operator(circuit.assign_parameters([0.7])).data,
+            atol=1e-14,
+        )
 
     @combine(
         bidirectional=[True, False],

@@ -3419,81 +3419,9 @@ impl PyDAGCircuit {
     /// Raises:
     ///     DAGCircuitError: if either node is not an OpNode or nodes are not connected
     fn swap_nodes(&mut self, node1: &DAGNode, node2: &DAGNode) -> PyResult<()> {
-        let node1 = node1.node.unwrap();
-        let node2 = node2.node.unwrap();
-
-        // Check that both nodes correspond to operations
-        if !matches!(
-            self.inner.dag.node_weight(node1).unwrap(),
-            NodeType::Operation(_)
-        ) || !matches!(
-            self.inner.dag.node_weight(node2).unwrap(),
-            NodeType::Operation(_)
-        ) {
-            return Err(DAGCircuitError::new_err(
-                "Nodes to swap are not both DAGOpNodes",
-            ));
-        }
-
-        // Gather all wires connecting node1 and node2.
-        // This functionality was extracted from rustworkx's 'get_edge_data'
-        let wires: Vec<Wire> = self
-            .inner
-            .dag
-            .edges(node1)
-            .filter(|edge| edge.target() == node2)
-            .map(|edge| *edge.weight())
-            .collect();
-
-        if wires.is_empty() {
-            return Err(DAGCircuitError::new_err(
-                "Attempt to swap unconnected nodes",
-            ));
-        };
-
-        // Closure that finds the first parent/child node connected to a reference node by given wire
-        // and returns relevant edge information depending on the specified direction:
-        //  - Incoming -> parent -> outputs (parent_edge_id, parent_source_node_id)
-        //  - Outgoing -> child -> outputs (child_edge_id, child_target_node_id)
-        // This functionality was inspired in rustworkx's 'find_predecessors_by_edge' and 'find_successors_by_edge'.
-        let directed_edge_for_wire = |node: NodeIndex, direction: Direction, wire: Wire| {
-            for edge in self.inner.dag.edges_directed(node, direction) {
-                if wire == *edge.weight() {
-                    match direction {
-                        Incoming => return Some((edge.id(), edge.source())),
-                        Outgoing => return Some((edge.id(), edge.target())),
-                    }
-                }
-            }
-            None
-        };
-
-        // Vector that contains a tuple of (wire, edge_info, parent_info, child_info) per wire in wires
-        let relevant_edges = wires
-            .iter()
-            .rev()
-            .map(|&wire| {
-                (
-                    wire,
-                    directed_edge_for_wire(node1, Outgoing, wire).unwrap(),
-                    directed_edge_for_wire(node1, Incoming, wire).unwrap(),
-                    directed_edge_for_wire(node2, Outgoing, wire).unwrap(),
-                )
-            })
-            .collect::<Vec<_>>();
-
-        // Iterate over relevant edges and modify self.dag
-        for (wire, (node1_to_node2, _), (parent_to_node1, parent), (node2_to_child, child)) in
-            relevant_edges
-        {
-            self.inner.dag.remove_edge(parent_to_node1);
-            self.inner.dag.add_edge(parent, node2, wire);
-            self.inner.dag.remove_edge(node1_to_node2);
-            self.inner.dag.add_edge(node2, node1, wire);
-            self.inner.dag.remove_edge(node2_to_child);
-            self.inner.dag.add_edge(node1, child, wire);
-        }
-        Ok(())
+        self.inner
+            .swap_nodes(node1.node.unwrap(), node2.node.unwrap())
+            .map_err(Into::into)
     }
 
     /// Get the node in the dag.
@@ -5461,6 +5389,80 @@ impl DAGCircuit {
     #[inline(always)]
     pub fn clbit_io_map(&self) -> &[[NodeIndex; 2]] {
         &self.clbit_io_map
+    }
+
+    /// Swap connected operation nodes on their shared wires.
+    ///
+    /// The caller must ensure that the swap preserves circuit semantics and
+    /// does not create a cycle. This is the implementation of Python's swap_nodes.
+    pub fn swap_nodes(&mut self, node1: NodeIndex, node2: NodeIndex) -> Result<(), DAGError> {
+        // Check that both nodes correspond to operations
+        if !matches!(self.dag.node_weight(node1).unwrap(), NodeType::Operation(_))
+            || !matches!(self.dag.node_weight(node2).unwrap(), NodeType::Operation(_))
+        {
+            return Err(DAGError::General(
+                "Nodes to swap are not both DAGOpNodes".to_string(),
+            ));
+        }
+
+        // Gather all wires connecting node1 and node2.
+        // This functionality was extracted from rustworkx's 'get_edge_data'
+        let wires: Vec<Wire> = self
+            .dag
+            .edges(node1)
+            .filter(|edge| edge.target() == node2)
+            .map(|edge| *edge.weight())
+            .collect();
+
+        if wires.is_empty() {
+            return Err(DAGError::General(
+                "Attempt to swap unconnected nodes".to_string(),
+            ));
+        };
+
+        // Closure that finds the first parent/child node connected to a reference node by given wire
+        // and returns relevant edge information depending on the specified direction:
+        //  - Incoming -> parent -> outputs (parent_edge_id, parent_source_node_id)
+        //  - Outgoing -> child -> outputs (child_edge_id, child_target_node_id)
+        // This functionality was inspired in rustworkx's 'find_predecessors_by_edge' and 'find_successors_by_edge'.
+        let directed_edge_for_wire = |node: NodeIndex, direction: Direction, wire: Wire| {
+            for edge in self.dag.edges_directed(node, direction) {
+                if wire == *edge.weight() {
+                    match direction {
+                        Incoming => return Some((edge.id(), edge.source())),
+                        Outgoing => return Some((edge.id(), edge.target())),
+                    }
+                }
+            }
+            None
+        };
+
+        // Vector that contains a tuple of (wire, edge_info, parent_info, child_info) per wire in wires
+        let relevant_edges = wires
+            .iter()
+            .rev()
+            .map(|&wire| {
+                (
+                    wire,
+                    directed_edge_for_wire(node1, Outgoing, wire).unwrap(),
+                    directed_edge_for_wire(node1, Incoming, wire).unwrap(),
+                    directed_edge_for_wire(node2, Outgoing, wire).unwrap(),
+                )
+            })
+            .collect::<Vec<_>>();
+
+        // Iterate over relevant edges and modify self.dag
+        for (wire, (node1_to_node2, _), (parent_to_node1, parent), (node2_to_child, child)) in
+            relevant_edges
+        {
+            self.dag.remove_edge(parent_to_node1);
+            self.dag.add_edge(parent, node2, wire);
+            self.dag.remove_edge(node1_to_node2);
+            self.dag.add_edge(node2, node1, wire);
+            self.dag.remove_edge(node2_to_child);
+            self.dag.add_edge(node1, child, wire);
+        }
+        Ok(())
     }
 
     /// Returns an immutable view of the inner StableGraph managed by the circuit.

@@ -37,6 +37,14 @@ class CommutativeCancellation(TransformationPass):
         H, X, Y, Z, CX, CY, CZ
 
 
+    With a target supporting CX, this also removes two CX gates from a
+    consecutive five-CX pattern on three qubits, leaving its middle gates
+    unchanged.
+
+    After cancellation, target-bearing calls also interchange adjacent, exactly
+    commuting CX/CZ gates when this advances one interaction without delaying
+    any participating wire.
+
     This pass is multithreaded and will potentially launch a thread pool
     with threads equal to the number of CPUs by default. You can tune the
     number of threads with the ``RAYON_NUM_THREADS`` environment variable.
@@ -103,5 +111,7 @@ class CommutativeCancellation(TransformationPass):
             self._commutation_checker,
             sorted(self.basis),
             self._approximation_degree,
+            cancel_cx5=self.target is not None and "cx" in self.basis,
+            reorder_for_depth=self.target is not None,
         )
         return dag
