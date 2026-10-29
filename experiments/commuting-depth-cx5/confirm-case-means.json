@@ -1,0 +1,2512 @@
+[
+  {
+    "case_id": "confirm/a2a_adder_modular_n16/a2a_clifford_rz_16/L0",
+    "pairs": 10,
+    "means": {
+      "D2_before": 109,
+      "D2_after": 109,
+      "N2_before": 115,
+      "N2_after": 115
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_adder_modular_n16/a2a_clifford_rz_16/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 109,
+      "D2_after": 109,
+      "N2_before": 115,
+      "N2_after": 115
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_adder_modular_n16/a2a_clifford_rz_16/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 107,
+      "D2_after": 106,
+      "N2_before": 113,
+      "N2_after": 113
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_adder_modular_n16/a2a_clifford_rz_16/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 107,
+      "D2_after": 106,
+      "N2_before": 113,
+      "N2_after": 113
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_mcx_n16/a2a_clifford_rz_16/L0",
+    "pairs": 10,
+    "means": {
+      "D2_before": 68,
+      "D2_after": 68,
+      "N2_before": 78,
+      "N2_after": 78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_mcx_n16/a2a_clifford_rz_16/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 68,
+      "D2_after": 68,
+      "N2_before": 78,
+      "N2_after": 78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_mcx_n16/a2a_clifford_rz_16/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 68,
+      "D2_after": 68,
+      "N2_before": 78,
+      "N2_after": 78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_mcx_n16/a2a_clifford_rz_16/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 68,
+      "D2_after": 68,
+      "N2_before": 78,
+      "N2_after": 78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_multiplier_n16/a2a_clifford_rz_16/L0",
+    "pairs": 10,
+    "means": {
+      "D2_before": 704,
+      "D2_after": 704,
+      "N2_before": 806,
+      "N2_after": 806
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_multiplier_n16/a2a_clifford_rz_16/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 704,
+      "D2_after": 704,
+      "N2_before": 802,
+      "N2_after": 802
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_multiplier_n16/a2a_clifford_rz_16/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 696,
+      "D2_after": 586,
+      "N2_before": 794,
+      "N2_after": 794
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_multiplier_n16/a2a_clifford_rz_16/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 696,
+      "D2_after": 586,
+      "N2_before": 794,
+      "N2_after": 794
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qaoa_n16/a2a_clifford_rz_16/L0",
+    "pairs": 10,
+    "means": {
+      "D2_before": 324,
+      "D2_after": 324,
+      "N2_before": 2100,
+      "N2_after": 2100
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qaoa_n16/a2a_clifford_rz_16/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 324,
+      "D2_after": 324,
+      "N2_before": 2100,
+      "N2_after": 2100
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qaoa_n16/a2a_clifford_rz_16/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 324,
+      "D2_after": 324,
+      "N2_before": 2100,
+      "N2_after": 2100
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qaoa_n16/a2a_clifford_rz_16/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 324,
+      "D2_after": 324,
+      "N2_before": 2100,
+      "N2_after": 2100
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qft_n16/a2a_clifford_rz_16/L0",
+    "pairs": 10,
+    "means": {
+      "D2_before": 58,
+      "D2_after": 58,
+      "N2_before": 240,
+      "N2_after": 240
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qft_n16/a2a_clifford_rz_16/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 58,
+      "D2_after": 58,
+      "N2_before": 240,
+      "N2_after": 240
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qft_n16/a2a_clifford_rz_16/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 58,
+      "D2_after": 58,
+      "N2_before": 238,
+      "N2_after": 238
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_qft_n16/a2a_clifford_rz_16/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 58,
+      "D2_after": 58,
+      "N2_before": 238,
+      "N2_after": 238
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_trotter_n16/a2a_clifford_rz_16/L0",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_trotter_n16/a2a_clifford_rz_16/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_trotter_n16/a2a_clifford_rz_16/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/a2a_trotter_n16/a2a_clifford_rz_16/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n16/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 382.68,
+      "D2_after": 382.68,
+      "N2_before": 573.73,
+      "N2_after": 573.73
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n16/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 297.41,
+      "D2_after": 297.41,
+      "N2_before": 344.78,
+      "N2_after": 344.78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n16/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 249.74,
+      "D2_after": 243.77,
+      "N2_before": 295.64,
+      "N2_after": 290.28
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n16/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 247.04,
+      "D2_after": 241.3,
+      "N2_before": 289.44,
+      "N2_after": 284.32
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n32/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1026.64,
+      "D2_after": 1026.64,
+      "N2_before": 1697.28,
+      "N2_after": 1697.28
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n32/rochester_53/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 709.68,
+      "D2_after": 709.68,
+      "N2_before": 853.78,
+      "N2_after": 853.78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n32/rochester_53/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 602.65,
+      "D2_after": 584.39,
+      "N2_before": 723.8,
+      "N2_after": 707.98
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n32/rochester_53/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 587.11,
+      "D2_after": 569.15,
+      "N2_before": 702.23,
+      "N2_after": 686.21
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n6/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 77.99,
+      "D2_after": 77.99,
+      "N2_before": 92.06,
+      "N2_after": 92.06
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n6/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 52.26,
+      "D2_after": 52.26,
+      "N2_before": 60.39,
+      "N2_after": 60.39
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n6/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 40.92,
+      "D2_after": 40.11,
+      "N2_before": 45.66,
+      "N2_after": 44.98
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n6/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 40.93,
+      "D2_after": 40.13,
+      "N2_before": 45.66,
+      "N2_after": 44.98
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n8/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 135.31,
+      "D2_after": 135.31,
+      "N2_before": 178.38,
+      "N2_after": 178.38
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n8/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 88.18,
+      "D2_after": 88.18,
+      "N2_before": 107.33,
+      "N2_after": 107.33
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n8/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 70.86,
+      "D2_after": 69.34,
+      "N2_before": 89.92,
+      "N2_after": 88.54
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/adder_modular_v17_n8/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 70.7,
+      "D2_after": 69.12,
+      "N2_before": 89.9,
+      "N2_after": 88.48
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n100/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 927.11,
+      "D2_after": 927.11,
+      "N2_before": 1659.81,
+      "N2_after": 1659.81
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n100/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 755.92,
+      "D2_after": 755.92,
+      "N2_before": 901.86,
+      "N2_after": 901.86
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n100/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 649.53,
+      "D2_after": 645.33,
+      "N2_before": 802.43,
+      "N2_after": 802.43
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n100/heavy_hex_d9_cz/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 563.23,
+      "D2_after": 558.91,
+      "N2_before": 660.36,
+      "N2_after": 659.55
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n16/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 76,
+      "D2_after": 76,
+      "N2_before": 109.89,
+      "N2_after": 109.89
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n16/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 51.15,
+      "D2_after": 51.15,
+      "N2_before": 56.76,
+      "N2_after": 56.76
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n16/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 49.34,
+      "D2_after": 43.52,
+      "N2_before": 53.5,
+      "N2_after": 49.8
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n16/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 49.53,
+      "D2_after": 43.69,
+      "N2_before": 53.34,
+      "N2_after": 49.69
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n50/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 304.1,
+      "D2_after": 304.1,
+      "N2_before": 476.44,
+      "N2_after": 476.44
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n50/rochester_53/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 219.67,
+      "D2_after": 219.67,
+      "N2_before": 224.68,
+      "N2_after": 224.68
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n50/rochester_53/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 192.02,
+      "D2_after": 172.97,
+      "N2_before": 196.86,
+      "N2_after": 181.92
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bv_all_ones_n50/rochester_53/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 193.78,
+      "D2_after": 174.54,
+      "N2_before": 199.74,
+      "N2_after": 185.53
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bvlike_n100/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1686.67,
+      "D2_after": 1686.67,
+      "N2_before": 2996.94,
+      "N2_after": 2996.94
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bvlike_n100/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1308.72,
+      "D2_after": 1308.72,
+      "N2_before": 1519.8,
+      "N2_after": 1519.8
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bvlike_n100/heavy_hex_d9_cz/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 0,
+      "D2_after": 0,
+      "N2_before": 0,
+      "N2_after": 0
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/bvlike_n100/heavy_hex_d9_cz/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 0,
+      "D2_after": 0,
+      "N2_before": 0,
+      "N2_after": 0
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/dtc_n100/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 3823.42,
+      "D2_after": 3823.42,
+      "N2_before": 52496.61,
+      "N2_after": 52496.61
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/dtc_n100/heavy_hex_d9_cz/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 400,
+      "D2_after": 400,
+      "N2_before": 19800,
+      "N2_after": 19800
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/dtc_n100/heavy_hex_d9_cz/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 400,
+      "D2_after": 400,
+      "N2_before": 19800,
+      "N2_after": 19800
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/dtc_n100/heavy_hex_d9_cz/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 400,
+      "D2_after": 400,
+      "N2_before": 19800,
+      "N2_after": 19800
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/long_2q_sequence/rochester_53_u/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 3,
+      "D2_after": 3,
+      "N2_before": 3,
+      "N2_after": 3
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/long_2q_sequence/rochester_53_u/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 3,
+      "D2_after": 3,
+      "N2_before": 3,
+      "N2_after": 3
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n16/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 271.35,
+      "D2_after": 271.35,
+      "N2_before": 413.46,
+      "N2_after": 413.46
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n16/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 137.04,
+      "D2_after": 137.04,
+      "N2_before": 202.05,
+      "N2_after": 202.05
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n16/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 117.85,
+      "D2_after": 115.73,
+      "N2_before": 166.39,
+      "N2_after": 166.39
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n16/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 117.81,
+      "D2_after": 115.85,
+      "N2_before": 166.08,
+      "N2_after": 166.08
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n5/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 19.43,
+      "D2_after": 19.43,
+      "N2_before": 23.19,
+      "N2_after": 23.19
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n5/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 14,
+      "D2_after": 14,
+      "N2_before": 15,
+      "N2_after": 15
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n5/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 14,
+      "D2_after": 14,
+      "N2_before": 15,
+      "N2_after": 15
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n5/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 14,
+      "D2_after": 14,
+      "N2_before": 15,
+      "N2_after": 15
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n6/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 48.19,
+      "D2_after": 48.19,
+      "N2_before": 57.21,
+      "N2_after": 57.21
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n6/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 28.95,
+      "D2_after": 28.95,
+      "N2_before": 32.79,
+      "N2_after": 32.79
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n6/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 23.85,
+      "D2_after": 23.33,
+      "N2_before": 27.04,
+      "N2_after": 27.04
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/mcx_kg24_n6/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 23.85,
+      "D2_after": 23.33,
+      "N2_before": 27.04,
+      "N2_after": 27.04
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n16/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2305.24,
+      "D2_after": 2305.24,
+      "N2_before": 3243.08,
+      "N2_after": 3243.08
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n16/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1631.41,
+      "D2_after": 1631.41,
+      "N2_before": 2127.51,
+      "N2_after": 2127.51
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n16/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1387.24,
+      "D2_after": 1375.19,
+      "N2_before": 1804,
+      "N2_after": 1802.98
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n16/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1387.54,
+      "D2_after": 1375.09,
+      "N2_before": 1801.06,
+      "N2_after": 1799.6
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n20/heavy_hex_d9_cz/L2",
+    "pairs": 20,
+    "means": {
+      "D2_before": 2301.55,
+      "D2_after": 2288.9,
+      "N2_before": 3092.4,
+      "N2_after": 3092.4
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n32/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 9855.77,
+      "D2_after": 9855.77,
+      "N2_before": 14421.67,
+      "N2_after": 14421.67
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n32/rochester_53/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 6995.49,
+      "D2_after": 6995.49,
+      "N2_before": 9697.23,
+      "N2_after": 9697.23
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n32/rochester_53/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 6048.58,
+      "D2_after": 5990.17,
+      "N2_before": 8394.16,
+      "N2_after": 8390.7
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/multiplier_h18_n32/rochester_53/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 6044.97,
+      "D2_after": 5985.62,
+      "N2_before": 8383.71,
+      "N2_after": 8375.05
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_ba_n100_3reps/heavy_hex_d9_cx/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1526.66,
+      "D2_after": 1524.9,
+      "N2_before": 8591.44,
+      "N2_after": 8589.68
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_ba_n100_3reps/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2227.18,
+      "D2_after": 2227.18,
+      "N2_before": 14710.14,
+      "N2_after": 14710.14
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_ba_n100_3reps/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1648.19,
+      "D2_after": 1648.19,
+      "N2_before": 9056.64,
+      "N2_after": 9056.64
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_ba_n100_3reps/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1531.56,
+      "D2_after": 1531.56,
+      "N2_before": 8610.32,
+      "N2_after": 8610.32
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_ba_n100_3reps/heavy_hex_d9_cz/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1517.19,
+      "D2_after": 1517.19,
+      "N2_before": 8522.39,
+      "N2_after": 8522.39
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_ba_n100_3reps/heavy_hex_d9_ecr/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1531.56,
+      "D2_after": 1531.56,
+      "N2_before": 8610.32,
+      "N2_after": 8610.32
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n16/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2111.17,
+      "D2_after": 2111.17,
+      "N2_before": 6387.93,
+      "N2_after": 6387.93
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n16/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1279.26,
+      "D2_after": 1279.26,
+      "N2_before": 4634.46,
+      "N2_after": 4634.46
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n16/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1106.06,
+      "D2_after": 1099.75,
+      "N2_before": 3750.94,
+      "N2_after": 3746.02
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n16/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1115.3,
+      "D2_after": 1109.81,
+      "N2_before": 3769.04,
+      "N2_after": 3762.78
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n32/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 5952.62,
+      "D2_after": 5952.62,
+      "N2_before": 33532.26,
+      "N2_after": 33532.26
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n32/rochester_53/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2581.07,
+      "D2_after": 2581.07,
+      "N2_before": 19837.29,
+      "N2_after": 19837.29
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n32/rochester_53/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2176.55,
+      "D2_after": 2142.76,
+      "N2_before": 15163.06,
+      "N2_after": 15114.34
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n32/rochester_53/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2218.41,
+      "D2_after": 2182.86,
+      "N2_before": 15195.38,
+      "N2_after": 15151.58
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n8/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 691.36,
+      "D2_after": 691.36,
+      "N2_before": 1083.21,
+      "N2_after": 1083.21
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n8/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 540.33,
+      "D2_after": 540.33,
+      "N2_before": 891.24,
+      "N2_after": 891.24
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n8/mumbai_27/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 497.24,
+      "D2_after": 496.12,
+      "N2_before": 787.62,
+      "N2_after": 787.38
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qaoa_complete_n8/mumbai_27/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 498.85,
+      "D2_after": 497.84,
+      "N2_before": 788.26,
+      "N2_after": 787.64
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft16_cancel/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 306.99,
+      "D2_after": 306.99,
+      "N2_before": 754.83,
+      "N2_after": 754.83
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft16_cancel/mumbai_27/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 217.25,
+      "D2_after": 217.25,
+      "N2_before": 578.55,
+      "N2_after": 578.55
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft16_cancel/mumbai_27/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 0,
+      "D2_after": 0,
+      "N2_before": 0,
+      "N2_after": 0
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft16_cancel/mumbai_27/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 0,
+      "D2_after": 0,
+      "N2_before": 0,
+      "N2_after": 0
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n14/melbourne_14_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 209.19,
+      "D2_after": 209.19,
+      "N2_before": 490.37,
+      "N2_after": 490.37
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n14/melbourne_14_u/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 141.49,
+      "D2_after": 141.49,
+      "N2_before": 348.35,
+      "N2_after": 348.35
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n14/melbourne_14_u/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 120.27,
+      "D2_after": 120.27,
+      "N2_before": 281.29,
+      "N2_after": 281.29
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n14/melbourne_14_u/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 118.76,
+      "D2_after": 118.76,
+      "N2_before": 281.33,
+      "N2_after": 281.33
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n8/melbourne_14_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 80.74,
+      "D2_after": 80.74,
+      "N2_before": 146.84,
+      "N2_after": 146.84
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n8/melbourne_14_u/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 58.9,
+      "D2_after": 58.9,
+      "N2_before": 96.68,
+      "N2_after": 96.68
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n8/melbourne_14_u/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 51.62,
+      "D2_after": 51.62,
+      "N2_before": 81.28,
+      "N2_after": 81.28
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_cp_n8/melbourne_14_u/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 47.31,
+      "D2_after": 47.31,
+      "N2_before": 78.21,
+      "N2_after": 78.21
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n32/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 898.3,
+      "D2_after": 898.3,
+      "N2_before": 3727.46,
+      "N2_after": 3727.46
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n32/rochester_53/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 501.23,
+      "D2_after": 501.23,
+      "N2_before": 2563.37,
+      "N2_after": 2563.37
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n32/rochester_53/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 380.89,
+      "D2_after": 380.89,
+      "N2_before": 1576.01,
+      "N2_after": 1576.01
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n32/rochester_53/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 355.54,
+      "D2_after": 355.54,
+      "N2_before": 1517.74,
+      "N2_after": 1517.74
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n64/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2183.56,
+      "D2_after": 2183.56,
+      "N2_before": 16596.03,
+      "N2_after": 16596.03
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n64/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1080.95,
+      "D2_after": 1080.95,
+      "N2_before": 10043.28,
+      "N2_after": 10043.28
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n64/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 885.99,
+      "D2_after": 885.99,
+      "N2_before": 4534.05,
+      "N2_after": 4534.05
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_full_n64/heavy_hex_d9_cz/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 863.12,
+      "D2_after": 863.12,
+      "N2_before": 4414.47,
+      "N2_after": 4414.47
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_n100/heavy_hex_d9_cx/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1807.94,
+      "D2_after": 1807.94,
+      "N2_before": 9497.18,
+      "N2_after": 9497.18
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_n100/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 4091.96,
+      "D2_after": 4091.96,
+      "N2_before": 45353.64,
+      "N2_after": 45353.64
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_n100/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2870.76,
+      "D2_after": 2870.76,
+      "N2_before": 26232.18,
+      "N2_after": 26232.18
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_n100/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1823.86,
+      "D2_after": 1823.86,
+      "N2_before": 9563.88,
+      "N2_after": 9563.88
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_n100/heavy_hex_d9_cz/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1774.91,
+      "D2_after": 1774.91,
+      "N2_before": 9311.68,
+      "N2_after": 9311.68
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qft_n100/heavy_hex_d9_ecr/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1823.86,
+      "D2_after": 1823.86,
+      "N2_before": 9563.88,
+      "N2_after": 9563.88
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20+sabre/tokyo_20/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 56.56,
+      "D2_after": 56.56,
+      "N2_before": 62.31,
+      "N2_after": 62.31
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20+sabre/tokyo_20/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 31.17,
+      "D2_after": 31.17,
+      "N2_before": 34.08,
+      "N2_after": 34.08
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20+sabre/tokyo_20/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 20.39,
+      "D2_after": 18.91,
+      "N2_before": 21.72,
+      "N2_after": 21.72
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20+sabre/tokyo_20/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 19.77,
+      "D2_after": 18.36,
+      "N2_before": 21.25,
+      "N2_after": 21.19
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20/tokyo_20/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 82.97,
+      "D2_after": 82.97,
+      "N2_before": 99.48,
+      "N2_after": 99.48
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20/tokyo_20/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 23,
+      "D2_after": 23,
+      "N2_before": 23,
+      "N2_after": 23
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20/tokyo_20/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 17,
+      "D2_after": 15,
+      "N2_before": 17,
+      "N2_after": 17
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bigd_20/tokyo_20/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 17,
+      "D2_after": 15,
+      "N2_before": 17,
+      "N2_after": 17
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54+sabre/sycamore_54/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 157.6,
+      "D2_after": 157.6,
+      "N2_before": 814.05,
+      "N2_after": 814.05
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54+sabre/sycamore_54/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 111.97,
+      "D2_after": 111.97,
+      "N2_before": 574.45,
+      "N2_after": 574.45
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54+sabre/sycamore_54/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 96.73,
+      "D2_after": 95.9,
+      "N2_before": 486.45,
+      "N2_after": 486.45
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54+sabre/sycamore_54/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 84.06,
+      "D2_after": 83.24,
+      "N2_before": 441.75,
+      "N2_after": 440.17
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54/sycamore_54/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 338.78,
+      "D2_after": 338.78,
+      "N2_before": 1670.76,
+      "N2_after": 1670.76
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54/sycamore_54/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 18,
+      "D2_after": 18,
+      "N2_before": 190,
+      "N2_after": 190
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54/sycamore_54/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 18,
+      "D2_after": 18,
+      "N2_before": 172,
+      "N2_after": 172
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bntf_54/sycamore_54/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 18,
+      "D2_after": 18,
+      "N2_before": 172,
+      "N2_after": 170
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53+sabre/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 507.71,
+      "D2_after": 507.71,
+      "N2_before": 2767.79,
+      "N2_after": 2767.79
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53+sabre/rochester_53/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 373.13,
+      "D2_after": 373.13,
+      "N2_before": 1901.88,
+      "N2_after": 1901.88
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53+sabre/rochester_53/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 230.24,
+      "D2_after": 216.47,
+      "N2_before": 1104.81,
+      "N2_after": 1073.01
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53+sabre/rochester_53/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 197.72,
+      "D2_after": 180.58,
+      "N2_before": 947.01,
+      "N2_after": 900.83
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": [
+      92
+    ]
+  },
+  {
+    "case_id": "confirm/queko_bss_53/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 899.63,
+      "D2_after": 899.63,
+      "N2_before": 5929.85,
+      "N2_after": 5929.85
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53/rochester_53/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 56,
+      "D2_after": 56,
+      "N2_before": 647,
+      "N2_after": 647
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53/rochester_53/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 46,
+      "D2_after": 42,
+      "N2_before": 363,
+      "N2_after": 363
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/queko_bss_53/rochester_53/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 46,
+      "D2_after": 40,
+      "N2_before": 355,
+      "N2_after": 341
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14/melbourne_14/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 257.64,
+      "D2_after": 257.64,
+      "N2_before": 696.63,
+      "N2_after": 696.63
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14/melbourne_14/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 206.58,
+      "D2_after": 206.58,
+      "N2_before": 575.01,
+      "N2_after": 575.01
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14/melbourne_14/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 187.74,
+      "D2_after": 187.74,
+      "N2_before": 532.05,
+      "N2_after": 532.05
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14/melbourne_14/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 191.49,
+      "D2_after": 191.49,
+      "N2_before": 533.52,
+      "N2_after": 533.52
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14_s10/mumbai_27_loose/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 242.88,
+      "D2_after": 242.88,
+      "N2_before": 774.69,
+      "N2_after": 774.69
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14_s10/mumbai_27_loose/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 200.43,
+      "D2_after": 200.43,
+      "N2_before": 641.73,
+      "N2_after": 641.73
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14_s10/mumbai_27_loose/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 180.99,
+      "D2_after": 180.99,
+      "N2_before": 575.55,
+      "N2_after": 575.55
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n14_d14_s10/mumbai_27_loose/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 178.47,
+      "D2_after": 178.47,
+      "N2_before": 572.97,
+      "N2_after": 572.97
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n27_d27/mumbai_27_loose/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 884.91,
+      "D2_after": 884.91,
+      "N2_before": 3828.57,
+      "N2_after": 3828.57
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n27_d27/mumbai_27_loose/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 776.01,
+      "D2_after": 776.01,
+      "N2_before": 3314.43,
+      "N2_after": 3314.43
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n27_d27/mumbai_27_loose/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 722.76,
+      "D2_after": 722.76,
+      "N2_before": 3083.61,
+      "N2_after": 3083.61
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n27_d27/mumbai_27_loose/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 722.1,
+      "D2_after": 722.1,
+      "N2_before": 3093.36,
+      "N2_after": 3093.36
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d20/rochester_53_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1141.26,
+      "D2_after": 1141.26,
+      "N2_before": 8047.32,
+      "N2_after": 8047.32
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d20/rochester_53_u/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1048.11,
+      "D2_after": 1048.11,
+      "N2_before": 6745.92,
+      "N2_after": 6745.92
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d20/rochester_53_u/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 996.69,
+      "D2_after": 996.69,
+      "N2_before": 6392.25,
+      "N2_after": 6392.25
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d20/rochester_53_u/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 988.65,
+      "D2_after": 988.65,
+      "N2_before": 6388.38,
+      "N2_after": 6388.38
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d50/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2781,
+      "D2_after": 2781,
+      "N2_before": 20346.09,
+      "N2_after": 20346.09
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d50/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2714.28,
+      "D2_after": 2714.28,
+      "N2_before": 17051.55,
+      "N2_after": 17051.55
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d50/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2560.56,
+      "D2_after": 2560.56,
+      "N2_before": 16200.54,
+      "N2_after": 16200.54
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/qv_n50_d50/heavy_hex_d9_cz/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2556.63,
+      "D2_after": 2556.63,
+      "N2_before": 16195.44,
+      "N2_after": 16195.44
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n14/melbourne_14_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 104.97,
+      "D2_after": 104.97,
+      "N2_before": 316.33,
+      "N2_after": 316.33
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n14/melbourne_14_u/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 84,
+      "D2_after": 84,
+      "N2_before": 280,
+      "N2_after": 280
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n14/melbourne_14_u/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 84,
+      "D2_after": 84,
+      "N2_before": 280,
+      "N2_after": 280
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n14/melbourne_14_u/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 84,
+      "D2_after": 84,
+      "N2_before": 280,
+      "N2_after": 280
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n8/melbourne_14_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 86.75,
+      "D2_after": 86.75,
+      "N2_before": 189.61,
+      "N2_after": 189.61
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n8/melbourne_14_u/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 16,
+      "D2_after": 16,
+      "N2_before": 64,
+      "N2_after": 64
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n8/melbourne_14_u/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 16,
+      "D2_after": 16,
+      "N2_before": 64,
+      "N2_after": 64
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ring_random_n8/melbourne_14_u/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 16,
+      "D2_after": 16,
+      "N2_before": 64,
+      "N2_after": 64
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_10/grid_5x5_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 312.57,
+      "D2_after": 312.57,
+      "N2_before": 522.15,
+      "N2_after": 522.15
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_10/grid_5x5_u/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 243.92,
+      "D2_after": 243.92,
+      "N2_before": 400.96,
+      "N2_after": 400.96
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_10/grid_5x5_u/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 206.02,
+      "D2_after": 204.31,
+      "N2_before": 349.95,
+      "N2_after": 349.93
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_10/grid_5x5_u/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 201.73,
+      "D2_after": 200.11,
+      "N2_before": 347.77,
+      "N2_after": 347.74
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_20/grid_7x7_u/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 686.87,
+      "D2_after": 686.87,
+      "N2_before": 1288.56,
+      "N2_after": 1288.56
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_20/grid_7x7_u/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 536.77,
+      "D2_after": 536.77,
+      "N2_before": 896.52,
+      "N2_after": 896.52
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_20/grid_7x7_u/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 460.54,
+      "D2_after": 458.28,
+      "N2_before": 797.93,
+      "N2_after": 797.93
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/ripple_adder_20/grid_7x7_u/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 450.97,
+      "D2_after": 448.47,
+      "N2_before": 786.23,
+      "N2_after": 786.21
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/square_heisenberg_n100/heavy_hex_d9_cx/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 401.94,
+      "D2_after": 401.94,
+      "N2_before": 1823.88,
+      "N2_after": 1823.88
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/square_heisenberg_n100/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1182.27,
+      "D2_after": 1182.27,
+      "N2_before": 5413.65,
+      "N2_after": 5413.65
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/square_heisenberg_n100/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 953.46,
+      "D2_after": 953.46,
+      "N2_before": 3656.61,
+      "N2_after": 3656.61
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/square_heisenberg_n100/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 401.94,
+      "D2_after": 401.94,
+      "N2_before": 1823.88,
+      "N2_after": 1823.88
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/square_heisenberg_n100/heavy_hex_d9_cz/L3",
+    "pairs": 100,
+    "means": {
+      "D2_before": 355.71,
+      "D2_after": 355.71,
+      "N2_before": 1608.93,
+      "N2_after": 1608.93
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/square_heisenberg_n100/heavy_hex_d9_ecr/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 401.94,
+      "D2_after": 401.94,
+      "N2_before": 1823.88,
+      "N2_after": 1823.88
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n100/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 2200.24,
+      "D2_after": 2200.24,
+      "N2_before": 4004.4,
+      "N2_after": 4004.4
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n100/heavy_hex_d9_cz/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 300,
+      "D2_after": 300,
+      "N2_before": 300,
+      "N2_after": 300
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n100/heavy_hex_d9_cz/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 300,
+      "D2_after": 300,
+      "N2_before": 300,
+      "N2_after": 300
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n100/heavy_hex_d9_cz/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 300,
+      "D2_after": 300,
+      "N2_before": 300,
+      "N2_after": 300
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n89/heavy_hex_d9_cz/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1787.71,
+      "D2_after": 1787.71,
+      "N2_before": 3214.47,
+      "N2_after": 3214.47
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n89/heavy_hex_d9_cz/L1",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1460.59,
+      "D2_after": 1460.59,
+      "N2_before": 1723.56,
+      "N2_after": 1723.56
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n89/heavy_hex_d9_cz/L2",
+    "pairs": 100,
+    "means": {
+      "D2_before": 1400.54,
+      "D2_after": 1368.67,
+      "N2_before": 1640.53,
+      "N2_after": 1640.53
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/su2_circular_n89/heavy_hex_d9_cz/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 1239.6,
+      "D2_after": 1210.1,
+      "N2_before": 1419.3,
+      "N2_after": 1410.5
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n16/mumbai_27/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 528.19,
+      "D2_after": 528.19,
+      "N2_before": 1635.81,
+      "N2_after": 1635.81
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n16/mumbai_27/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n16/mumbai_27/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n16/mumbai_27/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 146,
+      "D2_after": 146,
+      "N2_before": 900,
+      "N2_after": 900
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n32/rochester_53/L0",
+    "pairs": 100,
+    "means": {
+      "D2_before": 872.94,
+      "D2_after": 872.94,
+      "N2_before": 3856.44,
+      "N2_after": 3856.44
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n32/rochester_53/L1",
+    "pairs": 10,
+    "means": {
+      "D2_before": 178,
+      "D2_after": 178,
+      "N2_before": 1860,
+      "N2_after": 1860
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n32/rochester_53/L2",
+    "pairs": 10,
+    "means": {
+      "D2_before": 178,
+      "D2_after": 178,
+      "N2_before": 1860,
+      "N2_after": 1860
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  },
+  {
+    "case_id": "confirm/trotter_chain_n32/rochester_53/L3",
+    "pairs": 10,
+    "means": {
+      "D2_before": 178,
+      "D2_after": 178,
+      "N2_before": 1860,
+      "N2_after": 1860
+    },
+    "D2_loss_seeds": [],
+    "N2_loss_seeds": []
+  }
+]

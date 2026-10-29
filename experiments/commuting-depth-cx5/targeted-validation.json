@@ -1,0 +1,11 @@
+{
+  "native_reference_parity": 8100,
+  "exhaustive_five_cx_binary_maps": 7776,
+  "local_operator_checks": 324,
+  "local_max_error": 5.79553433516819e-16,
+  "pipeline_operator_checks": 60,
+  "pipeline_max_error": 2.1868857395626282e-15,
+  "dynamic_boundaries": 2,
+  "reference_matches_exercised": 1148,
+  "reference_swaps_exercised": 88
+}

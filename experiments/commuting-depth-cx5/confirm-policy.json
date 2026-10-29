@@ -1,0 +1,89 @@
+{
+  "bootstrap_replicates": 10000,
+  "cost_thresholds": {
+    "case_floor_bytes": 33554432,
+    "case_floor_ns": 25000000,
+    "case_ratio": 1.2,
+    "panel_ratio": 1.1,
+    "screen_fraction": 0.5
+  },
+  "format": "qtb-policy/1",
+  "guard_multiplier": 3.0,
+  "improvement_multiplier": 2.0,
+  "iterations_groups": [
+    "qft_n100",
+    "square_heisenberg_n100",
+    "qaoa_ba_n100_3reps"
+  ],
+  "measurement_protocol": {
+    "audit_fraction": 0.05,
+    "audit_minimum": 10,
+    "companion_rounds": 3,
+    "companion_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "memory_processes": 5,
+    "minimum_calls": 2,
+    "minimum_ns": 1000000000,
+    "output_retention_bytes": 8388608,
+    "quality_batch_size": 25,
+    "rerun_multiplier": 2,
+    "screen_rounds": 4,
+    "timing_rounds": 10,
+    "warmups": 1
+  },
+  "practical_ratio": 0.99,
+  "profile": "confirm-profile",
+  "quality_cap": 1.05,
+  "quality_prerequisites": [
+    "harness/roundtrip",
+    "audit/determinism"
+  ],
+  "required_ids": [
+    "harness/roundtrip",
+    "baseline/preflight",
+    "audit/determinism",
+    "CA1/C0",
+    "CA1/C1-C5",
+    "CA1/C6",
+    "CA1/C7",
+    "CA1/stage-coverage",
+    "CA2/improvement",
+    "CA5/timing",
+    "CA6/completeness",
+    "CA3/breadth",
+    "CA1/C1-lite",
+    "CA5/confirm-timing",
+    "CA5/memory"
+  ],
+  "rng_seed": 20260924,
+  "tolerances": {
+    "operator_atol": 1e-08,
+    "operator_rtol": 1e-07,
+    "state_atol": 1e-08
+  },
+  "upstream_test_budgets_s": {
+    "python": 14400,
+    "rust": 10800
+  },
+  "version": 6
+}

@@ -1,0 +1,36 @@
+{
+  "transpiler_exit": 0,
+  "native_entry_exit": 0,
+  "core_excluding_known_exit": 0,
+  "known_test": "parameter::symbol_expr::test::test_eq_exact_binary_deep",
+  "known_candidate_exit": 101,
+  "known_baseline_exit": 101,
+  "baseline_binary_sha256": "8d063240ed177edea3aaed14cc3d95e62e3c85d7bc0387cc3ef35dadcf76a8b4",
+  "baseline_binary_reused": true,
+  "artifacts": [
+    {
+      "source": "<WORKSPACE>/tmp/qiskit-combined-2026-10-28/implementation/crates/util/src/lib.rs",
+      "fresh": false
+    },
+    {
+      "source": "<WORKSPACE>/tmp/qiskit-combined-2026-10-28/implementation/crates/quantum_info/src/lib.rs",
+      "fresh": false
+    },
+    {
+      "source": "<WORKSPACE>/tmp/qiskit-combined-2026-10-28/implementation/crates/circuit/src/lib.rs",
+      "fresh": false
+    },
+    {
+      "source": "<WORKSPACE>/tmp/qiskit-combined-2026-10-28/implementation/crates/synthesis/src/lib.rs",
+      "fresh": false
+    },
+    {
+      "source": "<WORKSPACE>/tmp/qiskit-combined-2026-10-28/implementation/crates/circuit/src/lib.rs",
+      "fresh": false
+    },
+    {
+      "source": "<WORKSPACE>/tmp/qiskit-combined-2026-10-28/implementation/crates/transpiler/src/lib.rs",
+      "fresh": false
+    }
+  ]
+}

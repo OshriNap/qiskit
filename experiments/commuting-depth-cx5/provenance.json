@@ -1,0 +1,143 @@
+{
+  "publication_date": "2026-10-29",
+  "measurement_date": "2026-10-28",
+  "baseline_commit": "73aa14d2b8b423335a72cb1b8f940249029cb7df",
+  "code_commit": "2da4eb2af0cbd4cc677976efd3377cd435610e35",
+  "branch": "codex/commuting-depth-cx5",
+  "harness_commit": "2b617646546cccdc8066d0f08c2a13e849ef6381",
+  "source_sha256": {
+    "crates/circuit/src/dag_circuit.rs": "aae8e60c16998a5cd70dc86948696caca10b3264b89de460635ad591ea1da1ce",
+    "crates/transpiler/src/passes/commutation_cancellation.rs": "c48dbc801c8b17e687c4cd123320e57777e73d41e4c3a40d4647c0c1e65a1333",
+    "crates/transpiler/src/passes/two_qubit_peephole.rs": "2a17967a1dfee84d57c0e9d6bc7dc86e982b2cef6250cf5126c6c6cb3a4bdb93",
+    "qiskit/transpiler/passes/optimization/commutative_cancellation.py": "5fec329f5b907eddfb3a9e4e21378cf2adb3457932a7e85c019960922bf96b02",
+    "qiskit/transpiler/passes/optimization/two_qubit_peephole.py": "d389f8c8162475e5c15bdec1d445fcddda4415418894d92bb57940b7f0da917b",
+    "test/python/transpiler/test_commutative_cancellation.py": "c13eb78b2c7929b3f9e593f7573e95d24ac949baa6b773ab2a4d73ff59b478a6",
+    "test/python/transpiler/test_two_qubit_peephole.py": "3cc1fdff056e871d4fc2f1e1d78f1ece8c60f8ab84df508418a52a4cdbf3a935",
+    "releasenotes/notes/commuting-depth-reorder-7d98bbaea258c192.yaml": "aa099620898c9e1f12b577d05e820b942e6496aa3a317ef8e12ce2cd7a6ca821",
+    "releasenotes/notes/five-cx-cancellation-912c47bfa381de09.yaml": "3d814d44b40906cb393c5a524f4859a0bf51a26d2fce1e4f2e631ed11b82cf9f"
+  },
+  "published_source_sha256": {
+    "crates/circuit/src/dag_circuit.rs": "aae8e60c16998a5cd70dc86948696caca10b3264b89de460635ad591ea1da1ce",
+    "crates/transpiler/src/passes/commutation_cancellation.rs": "c48dbc801c8b17e687c4cd123320e57777e73d41e4c3a40d4647c0c1e65a1333",
+    "crates/transpiler/src/passes/two_qubit_peephole.rs": "2a17967a1dfee84d57c0e9d6bc7dc86e982b2cef6250cf5126c6c6cb3a4bdb93",
+    "qiskit/transpiler/passes/optimization/commutative_cancellation.py": "5fec329f5b907eddfb3a9e4e21378cf2adb3457932a7e85c019960922bf96b02",
+    "qiskit/transpiler/passes/optimization/two_qubit_peephole.py": "d389f8c8162475e5c15bdec1d445fcddda4415418894d92bb57940b7f0da917b",
+    "test/python/transpiler/test_commutative_cancellation.py": "c13eb78b2c7929b3f9e593f7573e95d24ac949baa6b773ab2a4d73ff59b478a6",
+    "test/python/transpiler/test_two_qubit_peephole.py": "7c5073c94792ccd9b79f730e8656903836ccffb61379f38f827997a38a74ac25",
+    "releasenotes/notes/commuting-depth-reorder-7d98bbaea258c192.yaml": "aa099620898c9e1f12b577d05e820b942e6496aa3a317ef8e12ce2cd7a6ca821",
+    "releasenotes/notes/five-cx-cancellation-912c47bfa381de09.yaml": "3d814d44b40906cb393c5a524f4859a0bf51a26d2fce1e4f2e631ed11b82cf9f"
+  },
+  "publication_normalizations": {
+    "test/python/transpiler/test_two_qubit_peephole.py": {
+      "change": "CRLF to LF only; matches the previously reviewed Git-normalized diff.",
+      "measured_sha256": "3cc1fdff056e871d4fc2f1e1d78f1ece8c60f8ab84df508418a52a4cdbf3a935",
+      "published_sha256": "7c5073c94792ccd9b79f730e8656903836ccffb61379f38f827997a38a74ac25"
+    }
+  },
+  "review_patch_sha256": "7a6af9bbed2a60c5fc69990a629839fbe4666304c9f77bbf11f8dac90af9b98e",
+  "confirm_native_builds": {
+    "baseline": {
+      "id": "45b0111153cb8d8262acbd04e5a85759bcb18faa908d2bffed1b50df56b09c66",
+      "native_sha256": "633cd156e646eac814f064041db274c83869adab25a16c0ad2c1568919251508"
+    },
+    "evolved": {
+      "id": "cd0ce36472bf08ffd625802d548e872679760b89cf792f043d578d48491bd268",
+      "native_sha256": "36c0c608e609fb2b1ac22e445c35c79a029431120d38520c185733652c7e280b"
+    }
+  },
+  "earlier_four_arm_native_sha256": {
+    "baseline": "dbb50c53357d114f104fc0412131a8522ef7cb5685cf34851769270cb4d0cfd4",
+    "reorder": "e7ac8ff7b3c8521a5c8155c214fe79e33a77c57914689eb7a82e4371c9984b99",
+    "cx5": "e25346ae54a9c7a0e09c1a542d05aa8aabc3c187c4cf6b9e15250ea771348a25",
+    "combined": "8415d45ba0f2847a0dc6dc07581651b0e47e975b3174663abc768bd4bca39646"
+  },
+  "earlier_python_test_suites": {
+    "python-tests.xml": {
+      "tests": "984",
+      "failures": "0",
+      "errors": "0",
+      "time": "85.284"
+    },
+    "threaded-tests.xml": {
+      "tests": "33",
+      "failures": "0",
+      "errors": "0",
+      "time": "37.452"
+    }
+  },
+  "artifacts": {
+    "confirm-paired-metrics.csv.gz": {
+      "original_sha256": "3b7fbfa3269eb3b49591c7b07041ff9f122343ca3c7756429cfa75340d203e22",
+      "public_sha256": "9def79172665e5a81fdf5525e99ec63e8e7eb41c0c1dbadc3e62da6f0171ac3f",
+      "uncompressed_public_sha256": "3b7fbfa3269eb3b49591c7b07041ff9f122343ca3c7756429cfa75340d203e22",
+      "local_path_prefixes_redacted": false,
+      "source_artifact": "qiskit-combined-confirm-2026-10-28/paired-metrics.csv"
+    },
+    "confirm-case-means.json": {
+      "original_sha256": "d4fc84962666c65c70d16ece03dfe889ca67fb8ac668f6999890afa10f35c658",
+      "public_sha256": "cc6151d7dafd385562b814a7c4c167ce4ba6037bedf96a07e4d898b236a3679f",
+      "uncompressed_public_sha256": "cc6151d7dafd385562b814a7c4c167ce4ba6037bedf96a07e4d898b236a3679f",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-confirm-2026-10-28/case-means.json"
+    },
+    "confirm-decision.json.gz": {
+      "original_sha256": "2615581a993040348a0b846ccceaa3a075b451ebb5b1dca520a0cdbbac40ee62",
+      "public_sha256": "71a2b637573b861eef39ec24032736227c28aba49dd863b35369dbe10af88e90",
+      "uncompressed_public_sha256": "62c1044cbccad045ccae7c98bdd2f01469e66d2db1e672e8513cbe2dd47b211b",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-confirm-2026-10-28/official/decision.json"
+    },
+    "confirm-manifest.json.gz": {
+      "original_sha256": "4c3cdddcec8d256007bd798e4f8c02500d0ba48b7d6cf70cafcdfd267611ee7a",
+      "public_sha256": "5f8673a5b48d3b9dd907b3ccdd606dc17cca34bfc942e2c3b77cce2066d6b2d7",
+      "uncompressed_public_sha256": "2ddc5760db17d619ac2297d749b2e23c14933a13aaec5a4148dc1ebe9dddd26f",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-confirm-2026-10-28/official/manifest.json"
+    },
+    "confirm-policy.json": {
+      "original_sha256": "af2ac0a1331dc02aa295ce473606b6a43c64a505e26c2280872e9127f4dd662e",
+      "public_sha256": "7afeaf54b7f1c542d86d6642a38c750347b06a03e54a4df4633f551ac4b5f77a",
+      "uncompressed_public_sha256": "7afeaf54b7f1c542d86d6642a38c750347b06a03e54a4df4633f551ac4b5f77a",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-confirm-2026-10-28/official/policy.json"
+    },
+    "four-arm-quality-summary.json.gz": {
+      "original_sha256": "036b482441f6968d1c06ac0a6589e6037b41e443c4d07328b45f0aa1f90b122c",
+      "public_sha256": "b8dc296e5db74e8e7d0a401e8bfc8ae98f729b77d2c500778a0a6e9c22f3b587",
+      "uncompressed_public_sha256": "7ac8baca4a0ba8c81a3ae5b9212029737238dd1c50d67d0ed993c025fbb9eb59",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-2026-10-28/results/quality-summary.json"
+    },
+    "four-arm-timing.json.gz": {
+      "original_sha256": "b8c6fe78ac8c55af59d69f2399f2c5511d908e49b0f5989255e5e4d329c6bb8b",
+      "public_sha256": "e1c6002f90a2303206b478ef9fec7f9d54af3a7b83941d9db3419c29b9a4aba6",
+      "uncompressed_public_sha256": "763ab5246f8806b58977103b7b0badef1424057b755393ec5eb4933920055811",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-2026-10-28/results/timing.json"
+    },
+    "four-arm-timing-summary.json.gz": {
+      "original_sha256": "514021a7f9a2db1e7ddf466325ef56a6349f0f7d3af7a18aa91b5655c1bd48cb",
+      "public_sha256": "f95a922253ecef16dc05f4051c9d9854ede1952c4c1dbfee8089ca47edb5511e",
+      "uncompressed_public_sha256": "ea71a97bc4fa10a317eeada36f744de2d6eea5fba5777e7974618a4ee83fc07b",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-2026-10-28/results/timing-summary.json"
+    },
+    "targeted-validation.json": {
+      "original_sha256": "23982d159e72bd848f1e05736bb9ed779014c37c9082cea30d9887709cbe190f",
+      "public_sha256": "d022df60484507af07baeaad97e30b88f20cf12380089527e90edf705239cd48",
+      "uncompressed_public_sha256": "d022df60484507af07baeaad97e30b88f20cf12380089527e90edf705239cd48",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-2026-10-28/results/validation.json"
+    },
+    "rust-test-provenance.json": {
+      "original_sha256": "beee898df2e1e20d9f719742ace0ebe7b3f9588976d0521b4b241381c47d3608",
+      "public_sha256": "29379a56492a923022f60bc72fda4f97b400d6d7244d68cbe6d5dfa26cb61ae6",
+      "uncompressed_public_sha256": "29379a56492a923022f60bc72fda4f97b400d6d7244d68cbe6d5dfa26cb61ae6",
+      "local_path_prefixes_redacted": true,
+      "source_artifact": "qiskit-combined-2026-10-28/results/rust-provenance.json"
+    }
+  },
+  "scope": "Nine measured source files; review documentation is a separate commit.",
+  "full_confirm_verdict": "CONSTRAINT_VIOLATION",
+  "original_observations_sha256_gzip": "7e8d1f2d1e0e843ad9dea58479f23234859b4fd61fe79fb7fcb937019d8f7423"
+}

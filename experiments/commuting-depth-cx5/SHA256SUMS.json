@@ -1,0 +1,16 @@
+{
+  "confirm-case-means.json": "cc6151d7dafd385562b814a7c4c167ce4ba6037bedf96a07e4d898b236a3679f",
+  "confirm-decision.json.gz": "71a2b637573b861eef39ec24032736227c28aba49dd863b35369dbe10af88e90",
+  "confirm-manifest.json.gz": "5f8673a5b48d3b9dd907b3ccdd606dc17cca34bfc942e2c3b77cce2066d6b2d7",
+  "confirm-paired-metrics.csv.gz": "9def79172665e5a81fdf5525e99ec63e8e7eb41c0c1dbadc3e62da6f0171ac3f",
+  "confirm-policy.json": "7afeaf54b7f1c542d86d6642a38c750347b06a03e54a4df4633f551ac4b5f77a",
+  "confirm-summary.json": "8da4126675ebfeacfad29394d6f9083013636fab4bcd2256f7258518d72f8b35",
+  "four-arm-quality-summary.json.gz": "b8dc296e5db74e8e7d0a401e8bfc8ae98f729b77d2c500778a0a6e9c22f3b587",
+  "four-arm-timing-summary.json.gz": "f95a922253ecef16dc05f4051c9d9854ede1952c4c1dbfee8089ca47edb5511e",
+  "four-arm-timing.json.gz": "e1c6002f90a2303206b478ef9fec7f9d54af3a7b83941d9db3419c29b9a4aba6",
+  "provenance.json": "09686506b93bf221d9421e758bc9bf893362a126ec499f388838cce609b2121b",
+  "README.md": "1551006a70ed0fe5f3e83dff4fe10f49cd8087f94fb0d5a433e1b85ae3d3ddc8",
+  "rust-test-provenance.json": "29379a56492a923022f60bc72fda4f97b400d6d7244d68cbe6d5dfa26cb61ae6",
+  "targeted-validation.json": "d022df60484507af07baeaad97e30b88f20cf12380089527e90edf705239cd48",
+  "verify_evidence.py": "3ee18b1e03a1e021c9a68d29c0cf9b7c98b41509176666c4b1a65cd68313fa4d"
+}
