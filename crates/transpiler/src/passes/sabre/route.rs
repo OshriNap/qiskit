@@ -43,7 +43,7 @@ use crate::neighbors::Neighbors;
 use crate::target::{Target, TargetCouplingError};
 use qiskit_circuit::dag_circuit::{DAGCircuit, DAGCircuitBuilder, NodeType, PyDAGCircuit, Wire};
 use qiskit_circuit::nlayout::NLayout;
-use qiskit_circuit::operations::{ControlFlow, StandardGate};
+use qiskit_circuit::operations::{ControlFlow, OperationRef, StandardGate};
 use qiskit_circuit::packed_instruction::PackedInstruction;
 use qiskit_circuit::{BlocksMode, PhysicalQubit, Qubit, VirtualQubit};
 use qiskit_util::getenv_use_multiple_threads;
@@ -168,6 +168,117 @@ impl RoutingResult<'_> {
 
     fn num_qubits(&self) -> usize {
         self.initial_layout.num_qubits()
+    }
+
+    /// Estimate the two-qubit cost of the routed circuit (top level only, without rebuilding it).
+    ///
+    /// Each two-qubit operation is weighted by the number of CX-equivalent gates it needs (see
+    /// [CostModel]), and each routing swap by 3.  Since optimization levels 2 and 3 of the preset
+    /// pass managers resynthesize two-qubit blocks after routing (see
+    /// [COST_SELECTION_MIN_TRIALS]), each maximal run of consecutive two-qubit operations on the
+    /// same pair of physical qubits is treated as a single block whose cost is the sum of its
+    /// weights, capped at 3 (any two-qubit unitary needs at most 3).  Single-qubit operations are
+    /// free, and the operations that only synchronize their qubits end the open blocks there.
+    ///
+    /// The result is an estimate of the two-qubit gate count and of the two-qubit depth (the
+    /// longest dependency chain of block costs) that the routed circuit will have after
+    /// optimization.  `model` must have been built from the same routing problem.
+    pub fn two_qubit_cost(&self, model: &CostModel) -> TwoQubitCost {
+        /// A block of consecutive two-qubit operations on the same physical qubits, open on both
+        /// of them: the other qubit, the depth at which the block starts, and its current cost.
+        #[derive(Clone, Copy)]
+        struct Block {
+            other: PhysicalQubit,
+            start: u32,
+            cost: u32,
+        }
+        /// The running estimate: the two-qubit depth reached on each physical qubit, the block
+        /// open on each qubit (if any) and the gate count so far.
+        struct Tracker {
+            depth: Vec<u32>,
+            open: Vec<Option<Block>>,
+            gates: u32,
+        }
+        impl Tracker {
+            /// Add a two-qubit operation of the given weight on physical qubits `a` and `b`.
+            fn add(&mut self, a: PhysicalQubit, b: PhysicalQubit, weight: u32) {
+                let (ai, bi) = (a.index(), b.index());
+                let (start, previous) = match (self.open[ai], self.open[bi]) {
+                    (Some(left), Some(right))
+                        if left.other == b && right.other == a && left.start == right.start =>
+                    {
+                        (left.start, left.cost)
+                    }
+                    _ => (self.depth[ai].max(self.depth[bi]), 0),
+                };
+                let cost = (previous + weight).min(MAX_BLOCK_COST);
+                self.gates += cost - previous;
+                self.depth[ai] = start + cost;
+                self.depth[bi] = start + cost;
+                self.open[ai] = Some(Block {
+                    other: b,
+                    start,
+                    cost,
+                });
+                self.open[bi] = Some(Block {
+                    other: a,
+                    start,
+                    cost,
+                });
+            }
+
+            /// Synchronize the given qubits without adding any two-qubit cost.
+            fn synchronize(&mut self, qubits: &[PhysicalQubit]) {
+                let level = qubits
+                    .iter()
+                    .map(|q| self.depth[q.index()])
+                    .max()
+                    .unwrap_or(0);
+                for q in qubits {
+                    self.depth[q.index()] = level;
+                    self.open[q.index()] = None;
+                }
+            }
+        }
+        debug_assert_eq!(model.offsets.len(), self.problem.sabre.dag.node_count() + 1);
+        let num_qubits = self.num_qubits();
+        let mut tracker = Tracker {
+            depth: vec![0; num_qubits],
+            open: vec![None; num_qubits],
+            gates: 0,
+        };
+        let mut layout = self.initial_layout.clone();
+        let mut qubits: Vec<PhysicalQubit> = Vec::with_capacity(4);
+        for item in &self.order.order {
+            for &[a, b] in item.initial_swaps() {
+                tracker.add(a, b, MAX_BLOCK_COST);
+                layout.swap_physical(a, b);
+            }
+            let node = item.node.index();
+            let events = model.offsets[node] as usize..model.offsets[node + 1] as usize;
+            for event in &model.events[events] {
+                match *event {
+                    CostEvent::TwoQ([a, b], weight) => tracker.add(layout[a], layout[b], weight),
+                    CostEvent::Synchronize(start, end) => {
+                        qubits.clear();
+                        qubits.extend(
+                            model.sync_qubits[start as usize..end as usize]
+                                .iter()
+                                .map(|q| layout[*q]),
+                        );
+                        tracker.synchronize(&qubits);
+                    }
+                }
+            }
+        }
+        for &[a, b] in &self.order.final_swaps {
+            tracker.add(a, b, MAX_BLOCK_COST);
+        }
+        TwoQubitCost {
+            gates: tracker.gates,
+            depth: tracker.depth.into_iter().max().unwrap_or(0),
+            swaps: self.swap_count(),
+        }
     }
 
     /// Rebuild the physical circuit from the virtual DAG, using the natural width of the target of
@@ -326,6 +437,198 @@ impl RoutingResult<'_> {
         }
         debug_assert_eq!(layout, self.final_layout);
         Ok(dag.build())
+    }
+}
+
+/// The largest number of two-qubit gates that a single two-qubit block needs.
+const MAX_BLOCK_COST: u32 = 3;
+
+/// The number of CX-equivalent gates of a two-qubit operation in [RoutingResult::two_qubit_cost],
+/// or `None` if the operation only synchronizes its qubits.
+///
+/// This must not call into Python (for example `Operation::directive` on a Python-space
+/// instruction): routing trials are scored on worker threads.
+fn two_qubit_weight(op: OperationRef, num_qubits: usize) -> Option<u32> {
+    if num_qubits != 2 {
+        return None;
+    }
+    match op {
+        OperationRef::ControlFlow(_)
+        | OperationRef::StandardInstruction(_)
+        | OperationRef::PauliProductMeasurement(_) => None,
+        OperationRef::PauliProductRotation(_) => Some(2),
+        OperationRef::StandardGate(gate) => Some(match gate {
+            StandardGate::CX
+            | StandardGate::CY
+            | StandardGate::CZ
+            | StandardGate::CH
+            | StandardGate::ECR => 1,
+            StandardGate::Swap => MAX_BLOCK_COST,
+            _ => 2,
+        }),
+        _ => Some(MAX_BLOCK_COST),
+    }
+}
+
+/// One event of a Sabre node in a [CostModel].
+#[derive(Clone, Copy, Debug)]
+enum CostEvent {
+    /// Consecutive two-qubit operations on this pair of qubits, with this total weight.
+    TwoQ([VirtualQubit; 2], u32),
+    /// An operation that only synchronizes the qubits `sync_qubits[start..end]`.
+    Synchronize(u32, u32),
+}
+
+/// The parts of a routing problem's operations that matter to [RoutingResult::two_qubit_cost],
+/// extracted once per problem so that scoring many routing trials of the same problem is cheap.
+///
+/// For each Sabre node, in order, it holds the two-qubit operations with their weights (1 for a
+/// controlled-Pauli-like gate `cx`, `cy`, `cz`, `ch` or `ecr`, 3 for a `swap`, a `unitary` or any
+/// non-standard two-qubit operation, and 2 for the other standard two-qubit gates and
+/// Pauli-product rotations; consecutive ones on the same pair of qubits are merged by summing their
+/// weights) and the operations that only synchronize their qubits (operations on more than two
+/// qubits, standard instructions such as barriers, Pauli-product measurements and control flow).
+/// Single-qubit operations are dropped.
+pub struct CostModel {
+    /// The events of Sabre node `i` are `events[offsets[i]..offsets[i + 1]]`.
+    offsets: Vec<u32>,
+    events: Vec<CostEvent>,
+    sync_qubits: Vec<VirtualQubit>,
+}
+
+impl CostModel {
+    pub fn new(problem: RoutingProblem) -> Self {
+        let dag = problem.dag;
+        let mut offsets = Vec::with_capacity(problem.sabre.dag.node_count() + 1);
+        let mut events = Vec::new();
+        let mut sync_qubits = Vec::new();
+        offsets.push(0);
+        // `node_weights` iterates in node-index order.
+        for node in problem.sabre.dag.node_weights() {
+            let first = events.len();
+            for index in &node.indices {
+                let NodeType::Operation(inst) = &dag[*index] else {
+                    panic!("Sabre DAG should only contain op nodes");
+                };
+                let qargs = dag.get_qargs(inst.qubits);
+                if qargs.len() < 2 {
+                    continue;
+                }
+                match two_qubit_weight(inst.op.view(), qargs.len()) {
+                    Some(weight) => {
+                        let pair = [VirtualQubit(qargs[0].0), VirtualQubit(qargs[1].0)];
+                        let merged = events.len() > first
+                            && match events.last_mut() {
+                                Some(CostEvent::TwoQ(previous, total))
+                                    if *previous == pair || *previous == [pair[1], pair[0]] =>
+                                {
+                                    *total += weight;
+                                    true
+                                }
+                                _ => false,
+                            };
+                        if !merged {
+                            events.push(CostEvent::TwoQ(pair, weight));
+                        }
+                    }
+                    None => {
+                        let start = sync_qubits.len() as u32;
+                        sync_qubits.extend(qargs.iter().map(|q| VirtualQubit(q.0)));
+                        events.push(CostEvent::Synchronize(start, sync_qubits.len() as u32));
+                    }
+                }
+            }
+            offsets.push(events.len() as u32);
+        }
+        Self {
+            offsets,
+            events,
+            sync_qubits,
+        }
+    }
+}
+
+/// The estimated two-qubit cost of a routed circuit; see [RoutingResult::two_qubit_cost].
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TwoQubitCost {
+    /// Estimated number of two-qubit gates after two-qubit block resynthesis.
+    pub gates: u32,
+    /// Estimated two-qubit depth after two-qubit block resynthesis.
+    pub depth: u32,
+    /// Number of swaps inserted at the top level.
+    pub swaps: usize,
+}
+
+/// The smallest number of trials for which Sabre chooses between its trials with [choose_trial];
+/// with fewer trials, it keeps the trial with the fewest swaps (the lowest index among ties).
+///
+/// The cost estimate of [RoutingResult::two_qubit_cost] assumes that the two-qubit blocks of the
+/// routed circuit are resynthesized afterwards.  Among the preset pass managers, only optimization
+/// levels 2 and 3 do that (their optimization stage resynthesizes two-qubit blocks), and they are
+/// also the ones that run 20 Sabre trials; levels 0 and 1 run 5.  Without that resynthesis every
+/// swap stays three two-qubit gates, so the fewest swaps is then the right choice for the gate
+/// count, and the choice is exactly the one Sabre made before it had a cost estimate.
+pub const COST_SELECTION_MIN_TRIALS: usize = 10;
+
+/// Choose the best of several routing results by their estimated two-qubit cost.
+///
+/// The trial with the fewest swaps (the lowest index among ties) is the reference: it is the trial
+/// that Sabre chooses without a cost estimate.  Swap count is a weak predictor of the final circuit,
+/// though: after two-qubit block resynthesis, a swap often merges with the gates next to it, and
+/// swap count says nothing about depth.  So among the trials whose estimated two-qubit gate count
+/// is no higher than the reference's, return the index of the one with the lowest estimated
+/// two-qubit depth (ties broken by fewest swaps, then by index, so the choice is deterministic).
+/// The chosen trial is never estimated to need more two-qubit gates than the reference.
+///
+/// # Panics
+///
+/// If `costs` is empty.
+pub fn choose_trial(costs: &[TwoQubitCost]) -> usize {
+    let reference = (0..costs.len())
+        .min_by_key(|&i| (costs[i].swaps, i))
+        .expect("must have at least one trial");
+    let limit = costs[reference].gates;
+    (0..costs.len())
+        .filter(|&i| costs[i].gates <= limit)
+        .min_by_key(|&i| (costs[i].depth, costs[i].swaps, i))
+        .expect("the reference trial is always within the limit")
+}
+
+#[cfg(test)]
+mod test {
+    use super::{TwoQubitCost, choose_trial};
+
+    fn cost(gates: u32, depth: u32, swaps: usize) -> TwoQubitCost {
+        TwoQubitCost {
+            gates,
+            depth,
+            swaps,
+        }
+    }
+
+    #[test]
+    fn choose_trial_prefers_depth_within_the_reference_count() {
+        // The reference (fewest swaps) is the first trial; the third one has more swaps but merges
+        // them into fewer gates, and it is shallower.
+        let costs = [cost(1000, 500, 40), cost(1001, 300, 45), cost(990, 400, 42)];
+        assert_eq!(choose_trial(&costs), 2);
+    }
+
+    #[test]
+    fn choose_trial_never_exceeds_the_reference_count() {
+        // The second trial is much shallower but needs one more gate than the reference.
+        let costs = [cost(100, 90, 10), cost(101, 10, 11)];
+        assert_eq!(choose_trial(&costs), 0);
+        // The reference is the trial with the fewest swaps, not the one with the fewest gates.
+        let costs = [cost(90, 80, 12), cost(100, 90, 10), cost(95, 70, 11)];
+        assert_eq!(choose_trial(&costs), 2);
+    }
+
+    #[test]
+    fn choose_trial_breaks_ties_by_swaps_then_index() {
+        let costs = [cost(50, 20, 7), cost(50, 20, 5), cost(50, 20, 5)];
+        assert_eq!(choose_trial(&costs), 1);
+        assert_eq!(choose_trial(&[cost(7, 3, 2)]), 0);
     }
 }
 
@@ -1027,7 +1330,8 @@ pub fn sabre_routing(
 }
 
 /// Run (potentially in parallel) several trials of the Sabre routing algorithm on the given
-/// problem and return the one with fewest swaps.
+/// problem and return the best one: as chosen by [choose_trial] if there are at least
+/// [COST_SELECTION_MIN_TRIALS] trials, otherwise the one with the fewest swaps.
 pub fn swap_map<'a>(
     problem: RoutingProblem<'a>,
     initial_layout: &'_ NLayout,
@@ -1035,6 +1339,29 @@ pub fn swap_map<'a>(
     num_trials: usize,
     run_in_parallel: Option<bool>,
 ) -> RoutingResult<'a> {
+    let model = (num_trials >= COST_SELECTION_MIN_TRIALS).then(|| CostModel::new(problem));
+    swap_map_with_model(
+        problem,
+        initial_layout,
+        seed,
+        num_trials,
+        run_in_parallel,
+        model.as_ref(),
+    )
+    .0
+}
+
+/// [swap_map], choosing between the trials with [choose_trial] and the [CostModel] of the problem
+/// if `model` is given, and by fewest swaps (the first of ties) otherwise.  Also returns the
+/// estimated cost of the chosen trial, if `model` is given.
+pub fn swap_map_with_model<'a>(
+    problem: RoutingProblem<'a>,
+    initial_layout: &'_ NLayout,
+    seed: Option<u64>,
+    num_trials: usize,
+    run_in_parallel: Option<bool>,
+    model: Option<&CostModel>,
+) -> (RoutingResult<'a>, Option<TwoQubitCost>) {
     let seeds = match seed {
         Some(seed) => Pcg64Mcg::seed_from_u64(seed),
         None => Pcg64Mcg::try_from_rng(&mut SysRng).unwrap(),
@@ -1043,16 +1370,30 @@ pub fn swap_map<'a>(
     .take(num_trials)
     .collect::<Vec<_>>();
 
-    CondIterator::new(
+    let trials = CondIterator::new(
         seeds,
         num_trials > 1
             && run_in_parallel.unwrap_or_else(|| getenv_use_multiple_threads() && num_trials > 1),
-    )
-    .map(|seed| swap_map_trial(problem, initial_layout, seed))
-    .enumerate()
-    .min_by_key(|(index, result)| (result.order.swap_count(), *index))
-    .map(|(_, result)| result)
-    .expect("must have at least one trial")
+    );
+    let Some(model) = model else {
+        let result = trials
+            .map(|seed| swap_map_trial(problem, initial_layout, seed))
+            .enumerate()
+            .min_by_key(|(index, result)| (result.order.swap_count(), *index))
+            .map(|(_, result)| result)
+            .expect("must have at least one trial");
+        return (result, None);
+    };
+    let mut trials: Vec<(RoutingResult<'a>, TwoQubitCost)> = trials
+        .map(|seed| {
+            let result = swap_map_trial(problem, initial_layout, seed);
+            let cost = result.two_qubit_cost(model);
+            (result, cost)
+        })
+        .collect();
+    let costs = trials.iter().map(|(_, cost)| *cost).collect::<Vec<_>>();
+    let (result, cost) = trials.swap_remove(choose_trial(&costs));
+    (result, Some(cost))
 }
 
 /// Run a single trial of the Sabre routing algorithm.
