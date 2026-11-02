@@ -36,7 +36,53 @@ use crate::target::{Target, TargetCouplingError};
 
 use super::dag::SabreDAG;
 use super::heuristic::Heuristic;
-use super::route::{RoutingProblem, RoutingResult, RoutingTarget, swap_map, swap_map_trial};
+use super::route::{
+    COST_SELECTION_MIN_TRIALS, CostModel, RoutingProblem, RoutingResult, RoutingTarget,
+    TwoQubitCost, choose_trial, swap_map, swap_map_trial, swap_map_with_model,
+};
+
+/// Run all the layout trials (in parallel, if `run_in_parallel`), and return the best result.
+///
+/// If there are at least [COST_SELECTION_MIN_TRIALS] random layout trials (`num_random_trials`),
+/// the best result is chosen by [choose_trial], otherwise it is the one with the fewest swaps (the
+/// first of ties).  Each layout trial chooses between its routing trials in the same way, depending
+/// on `num_swap_trials`.  `trial` gets the trial index, its seed and the cost model of `problem`
+/// (if either choice needs it), and returns its routing result with its estimated cost, if it
+/// computed it.
+fn best_layout_trial<'a>(
+    problem: RoutingProblem<'a>,
+    num_random_trials: usize,
+    num_swap_trials: usize,
+    seeds: Vec<u64>,
+    run_in_parallel: bool,
+    trial: impl Fn(usize, u64, Option<&CostModel>) -> (RoutingResult<'a>, Option<TwoQubitCost>)
+    + Sync
+    + Send,
+) -> RoutingResult<'a> {
+    let choose_by_cost = num_random_trials >= COST_SELECTION_MIN_TRIALS;
+    let model = (choose_by_cost || num_swap_trials >= COST_SELECTION_MIN_TRIALS)
+        .then(|| CostModel::new(problem));
+    let trials = CondIterator::new(seeds, run_in_parallel)
+        .enumerate()
+        .map(|(index, seed)| (index, trial(index, seed, model.as_ref())));
+    if !choose_by_cost {
+        return trials
+            .min_by_key(|(index, (result, _))| (result.swap_count(), *index))
+            .map(|(_, (result, _))| result)
+            .expect("should have at least one layout trial");
+    }
+    let model = model
+        .as_ref()
+        .expect("the cost model is built when choosing by cost");
+    let mut trials: Vec<(RoutingResult<'a>, TwoQubitCost)> = trials
+        .map(|(_, (result, cost))| {
+            let cost = cost.unwrap_or_else(|| result.two_qubit_cost(model));
+            (result, cost)
+        })
+        .collect();
+    let costs = trials.iter().map(|(_, cost)| *cost).collect::<Vec<_>>();
+    trials.swap_remove(choose_trial(&costs)).0
+}
 
 #[allow(clippy::too_many_arguments)]
 #[pyfunction(name = "sabre_layout_and_routing")]
@@ -182,14 +228,13 @@ pub fn sabre_layout_and_routing(
             starting_layouts.extend(partial_layouts);
             add_heuristic_layouts(&mut starting_layouts, problem, allow_parallel);
             let num_layout_trials = starting_layouts.len();
-            let (_, result) = CondIterator::new(
+            let result = best_layout_trial(
+                problem,
+                num_random_trials,
+                num_swap_trials,
                 seeds(num_layout_trials),
                 allow_parallel && num_layout_trials > 1,
-            )
-            .enumerate()
-            .map(|(index, seed)| {
-                (
-                    index,
+                |index, seed, model| {
                     layout_trial(
                         problem,
                         seed,
@@ -197,11 +242,10 @@ pub fn sabre_layout_and_routing(
                         num_swap_trials,
                         allow_parallel && num_swap_trials > 1,
                         &starting_layouts[index],
-                    ),
-                )
-            })
-            .min_by_key(|(index, result)| (result.swap_count(), *index))
-            .expect("should have at least one layout trial");
+                        model,
+                    )
+                },
+            );
             let num_swaps = result.swap_count();
             let out = dag.physical_empty_like_with_capacity(
                 num_physical_qubits,
@@ -288,14 +332,13 @@ pub fn sabre_layout_and_routing(
                 }
                 add_heuristic_layouts(&mut starting_layouts, sub_problem, allow_parallel);
                 let num_layout_trials = starting_layouts.len();
-                let (_, result) = CondIterator::new(
+                let result = best_layout_trial(
+                    sub_problem,
+                    num_random_trials,
+                    num_swap_trials,
                     seeds(num_layout_trials),
                     allow_parallel && num_layout_trials > 1,
-                )
-                .enumerate()
-                .map(|(index, seed)| {
-                    (
-                        index,
+                    |index, seed, model| {
                         layout_trial(
                             sub_problem,
                             seed,
@@ -303,11 +346,10 @@ pub fn sabre_layout_and_routing(
                             num_swap_trials,
                             allow_parallel && num_layout_trials == 1,
                             &starting_layouts[index],
-                        ),
-                    )
-                })
-                .min_by_key(|(index, result)| (result.swap_count(), *index))
-                .expect("should have at least one layout trial");
+                            model,
+                        )
+                    },
+                );
                 for ((_, sub_phys), virt) in result
                     .initial_layout
                     .iter_virtual()
@@ -377,6 +419,11 @@ pub fn sabre_layout_and_routing(
     }
 }
 
+/// Run one layout trial: improve the starting layout by forwards-backwards routing passes, then
+/// route the problem from it.  The routing trials are chosen between as in [swap_map]: with the
+/// problem's cost `model` if there are at least [COST_SELECTION_MIN_TRIALS] of them (and `model` is
+/// given), otherwise by fewest swaps.  Returns the routing result and its estimated cost, if the
+/// cost model was used.
 fn layout_trial<'a>(
     problem: RoutingProblem<'a>,
     seed: u64,
@@ -384,7 +431,8 @@ fn layout_trial<'a>(
     num_swap_trials: usize,
     run_swap_in_parallel: bool,
     starting_layout: &'_ [Option<PhysicalQubit>],
-) -> RoutingResult<'a> {
+    model: Option<&CostModel>,
+) -> (RoutingResult<'a>, Option<TwoQubitCost>) {
     let num_physical_qubits: u32 = problem.target.neighbors.num_qubits().try_into().unwrap();
     let mut rng = Pcg64Mcg::seed_from_u64(seed);
 
@@ -440,12 +488,13 @@ fn layout_trial<'a>(
         }
         NLayout::from_vecs_unchecked(virt_to_phys, phys_to_virt)
     };
-    swap_map(
+    swap_map_with_model(
         problem,
         &initial_layout,
         Some(seed),
         num_swap_trials,
         Some(run_swap_in_parallel),
+        model.filter(|_| num_swap_trials >= COST_SELECTION_MIN_TRIALS),
     )
 }
 

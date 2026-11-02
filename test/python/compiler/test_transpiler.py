@@ -2323,7 +2323,7 @@ class TestTranspile(QiskitTestCase):
         # `dt` set.  For that test to work, we need to check that compiling explicitly without
         # errors produces a different layout to transpiling with them, so we can then later check
         # that the "custom dt" transpile matches the "with errors" case.
-        seed_transpiler = 2025_07_07
+        seed_transpiler = 2025_07_08
         tqc_no_error = transpile(qc, coupling_map=coupling_map, seed_transpiler=seed_transpiler)
         # transpile with gate errors
         tqc_no_dt = transpile(qc, backend=backend, seed_transpiler=seed_transpiler)
@@ -2858,7 +2858,7 @@ class TestPostTranspileIntegration(QiskitTestCase):
 
         tqc = transpile(qc, backend=backend, seed_transpiler=2025_07_07, callback=callback)
         self.assertTrue(vf2_post_layout_called)
-        self.assertEqual([1, 4, 3], _get_index_layout(tqc, qubits))
+        self.assertEqual([1, 3, 4], _get_index_layout(tqc, qubits))
 
     @data("sabre", "lookahead", "basic")
     def test_final_layout_combined_correctly(self, routing):
