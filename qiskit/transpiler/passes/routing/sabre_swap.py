@@ -57,9 +57,13 @@ class SabreSwap(TransformationPass):
     implemented and ``current_layout`` updated.
 
     This transpiler pass adds onto the SABRE algorithm in that it will run
-    multiple trials of the algorithm with different seeds. The best output,
-    determined by the trial with the least amount of SWAPs inserted, will
-    be selected from the random trials.
+    multiple trials of the algorithm with different seeds. The best output
+    will be selected from the random trials. With fewer than 10 trials, it is
+    the trial with the least amount of SWAPs inserted. With 10 or more trials,
+    each trial is scored by an estimate of its two-qubit gate count and
+    two-qubit depth after two-qubit block resynthesis, and among the trials
+    whose estimated gate count is no higher than that of the trial with the
+    least amount of SWAPs, the one with the lowest estimated depth is selected.
 
     **References:**
 

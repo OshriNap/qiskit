@@ -55,8 +55,14 @@ class SabreLayout(TransformationPass):
     connectivity). This is unlike most other layout passes which are :class:`~.AnalysisPass`
     objects and just find an initial layout and set that on the property set. This is
     done because by default the pass will run parallel seed trials with different random
-    seeds for selecting the random initial layout and then selecting the routed output
-    which results in the least number of swap gates needed.
+    seeds for selecting the random initial layout and then selecting the best routed output.
+    With fewer than 10 layout trials, that is the output which results in the least number of
+    swap gates needed. With 10 or more, each routed output is scored by an estimate of its
+    two-qubit gate count and two-qubit depth after two-qubit block resynthesis, and among the
+    outputs whose estimated gate count is no higher than that of the output with the least
+    number of swap gates, the one with the lowest estimated depth is selected. The routing
+    trials of each layout trial are chosen between in the same way, depending on
+    ``swap_trials`` (see :class:`.SabreSwap`).
 
     You can use the ``routing_pass`` argument to have this pass operate as a typical
     layout pass. When specified this will use the specified routing pass to select an
@@ -67,9 +73,9 @@ class SabreLayout(TransformationPass):
     trials. If the ``sabre_starting_layouts`` is present in the property set
     when this pass is run, that will be used for additional trials. There will still
     be ``layout_trials`` of full random starting layouts run and the contents of
-    ``sabre_starting_layouts`` will be run in addition to those. The output which results
-    in the lowest amount of swap gates (whether from the random trials or the property
-    set starting point) will be used. The value for this property set field should be a
+    ``sabre_starting_layouts`` will be run in addition to those. The best output (whether
+    from the random trials or the property set starting point, chosen as described above)
+    will be used. The value for this property set field should be a
     list of :class:`.Layout` objects representing the starting layouts to use. If a
     virtual qubit is missing from an :class:`.Layout` object in the list a random qubit
     will be selected.
@@ -134,8 +140,10 @@ class SabreLayout(TransformationPass):
                 with the ``routing_pass`` argument and an error will be raised
                 if both are used.
             layout_trials (int): The number of random seed trials to run
-                layout with. When > 1 the trial that results in the output with
-                the fewest swap gates will be selected. If this is not specified
+                layout with. When > 1 the best trial is selected: the one that
+                results in the output with the fewest swap gates if this is
+                less than 10, otherwise the one chosen by its estimated
+                two-qubit cost (see above). If this is not specified
                 (and ``routing_pass`` is not set) then the number of local
                 physical CPUs will be used as the default value. This option is
                 mutually exclusive with the ``routing_pass`` argument and an error
