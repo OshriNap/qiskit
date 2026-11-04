@@ -568,11 +568,13 @@ pub struct TwoQubitCost {
 /// with fewer trials, it keeps the trial with the fewest swaps (the lowest index among ties).
 ///
 /// The cost estimate of [RoutingResult::two_qubit_cost] assumes that the two-qubit blocks of the
-/// routed circuit are resynthesized afterwards.  Among the preset pass managers, only optimization
-/// levels 2 and 3 do that (their optimization stage resynthesizes two-qubit blocks), and they are
-/// also the ones that run 20 Sabre trials; levels 0 and 1 run 5.  Without that resynthesis every
-/// swap stays three two-qubit gates, so the fewest swaps is then the right choice for the gate
-/// count, and the choice is exactly the one Sabre made before it had a cost estimate.
+/// routed circuit are resynthesized afterwards.  Among the Python preset pass managers, only
+/// optimization levels 2 and 3 do that (their optimization stage resynthesizes two-qubit blocks),
+/// and they are also the ones that run 20 Sabre trials; levels 0 and 1 run 5.  Without that
+/// resynthesis every swap stays three two-qubit gates, so the fewest swaps is then the right choice
+/// for the gate count, and the choice is exactly the one Sabre made before it had a cost estimate.
+/// The trial count is only a proxy for resynthesis, though: the C API's level 1 runs 20 trials
+/// without resynthesizing two-qubit blocks.
 pub const COST_SELECTION_MIN_TRIALS: usize = 10;
 
 /// Choose the best of several routing results by their estimated two-qubit cost.
@@ -580,8 +582,8 @@ pub const COST_SELECTION_MIN_TRIALS: usize = 10;
 /// The trial with the fewest swaps (the lowest index among ties) is the reference: it is the trial
 /// that Sabre chooses without a cost estimate.  Swap count is a weak predictor of the final circuit,
 /// though: after two-qubit block resynthesis, a swap often merges with the gates next to it, and
-/// swap count says nothing about depth.  So among the trials whose estimated two-qubit gate count
-/// is no higher than the reference's, return the index of the one with the lowest estimated
+/// swap count is only a loose guide to depth.  So among the trials whose estimated two-qubit gate
+/// count is no higher than the reference's, return the index of the one with the lowest estimated
 /// two-qubit depth (ties broken by fewest swaps, then by index, so the choice is deterministic).
 /// The chosen trial is never estimated to need more two-qubit gates than the reference.
 ///
