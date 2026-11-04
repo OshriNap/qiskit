@@ -29,12 +29,14 @@ use qiskit_transpiler::transpile_layout::TranspileLayout;
 pub struct SabreLayoutOptions {
     /// The number of forward-backward iterations in the sabre routing algorithm
     max_iterations: usize,
-    /// The number of trials to run of the sabre routing algorithm for each iteration. When > 1 the
-    /// trial that routing trial that results in the output with the fewest swap gates will be
-    /// selected.
+    /// The number of trials to run of the sabre routing algorithm for each iteration. When > 1, the
+    /// routing trial that results in the output with the fewest swap gates is selected if there
+    /// are fewer than 10 trials; with 10 or more, the trial is chosen by its estimated two-qubit
+    /// cost after two-qubit block resynthesis, as in ``SabreSwap``.
     num_swap_trials: usize,
-    /// The number of random layout trials to run. The trial that results in the output with the
-    /// fewest swap gates will be selected.
+    /// The number of random layout trials to run. With fewer than 10, the trial that results in
+    /// the output with the fewest swap gates is selected; with 10 or more, the trial is chosen by
+    /// its estimated two-qubit cost after two-qubit block resynthesis, as in ``SabreLayout``.
     num_random_trials: usize,
     /// A seed value for the pRNG used internally.
     seed: u64,
