@@ -682,7 +682,10 @@ Uses the :class:`.SabreSwap` algorithm to route.  This uses `Qiskit's enhanced v
 <sabre-lightsabre-paper_>`_ of `the original Sabre routing algorithm <sabre-original-paper_>`_.
 
 This routing algorithm runs with threaded parallelism to consider several different possibilities
-for routing, choosing the one that minimizes the number of inserted swaps.
+for routing.  At optimization levels 0 and 1 it chooses the one that minimizes the number of
+inserted swaps.  At levels 2 and 3, which resynthesize two-qubit blocks after routing, it chooses by
+the estimated two-qubit gate count and depth after that resynthesis (see the ``trial_selection``
+argument of :class:`.SabreSwap`).
 
 The optimization level affects how many different stochastic seeds are attempted for the full
 routing, and the amount of work done by :class:`.VF2PostLayout` to post-optimize the initial layout.

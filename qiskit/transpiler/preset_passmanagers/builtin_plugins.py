@@ -429,6 +429,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
                 heuristic="decay",
                 seed=seed_transpiler,
                 trials=trial_count,
+                trial_selection="two_qubit_cost",
             )
             return common.generate_routing_passmanager(
                 routing_pass,
@@ -446,6 +447,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
                 heuristic="decay",
                 seed=seed_transpiler,
                 trials=trial_count,
+                trial_selection="two_qubit_cost",
             )
             return common.generate_routing_passmanager(
                 routing_pass,
@@ -802,6 +804,7 @@ class DefaultLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
+                trial_selection="two_qubit_cost",
             )
             layout.append(
                 ConditionalController(
@@ -834,6 +837,7 @@ class DefaultLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
+                trial_selection="two_qubit_cost",
             )
             layout.append(
                 ConditionalController(
@@ -963,6 +967,7 @@ class SabreLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
+                trial_selection="two_qubit_cost",
             )
         elif optimization_level == 3:
             trial_count = _get_trial_count(20)
@@ -974,6 +979,7 @@ class SabreLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
+                trial_selection="two_qubit_cost",
             )
         else:
             raise TranspilerError(f"Invalid optimization level: {optimization_level}")

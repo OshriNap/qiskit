@@ -18,7 +18,7 @@ use qiskit_circuit::circuit_data::CircuitData;
 use qiskit_circuit::dag_circuit::DAGCircuit;
 use qiskit_circuit::{PhysicalQubit, Qubit};
 use qiskit_transpiler::passes::sabre::heuristic;
-use qiskit_transpiler::passes::sabre::sabre_layout_and_routing;
+use qiskit_transpiler::passes::sabre::{TrialSelection, sabre_layout_and_routing};
 use qiskit_transpiler::target::Target;
 use qiskit_transpiler::transpile_layout::TranspileLayout;
 
@@ -28,14 +28,12 @@ use qiskit_transpiler::transpile_layout::TranspileLayout;
 pub struct SabreLayoutOptions {
     /// The number of forward-backward iterations in the sabre routing algorithm
     max_iterations: usize,
-    /// The number of trials to run of the sabre routing algorithm for each iteration. When > 1, the
-    /// routing trial that results in the output with the fewest swap gates is selected if there
-    /// are fewer than 10 trials; with 10 or more, the trial is chosen by its estimated two-qubit
-    /// cost after two-qubit block resynthesis, as in ``SabreSwap``.
+    /// The number of trials to run of the sabre routing algorithm for each iteration. When > 1 the
+    /// trial that routing trial that results in the output with the fewest swap gates will be
+    /// selected.
     num_swap_trials: usize,
-    /// The number of random layout trials to run. With fewer than 10, the trial that results in
-    /// the output with the fewest swap gates is selected; with 10 or more, the trial is chosen by
-    /// its estimated two-qubit cost after two-qubit block resynthesis, as in ``SabreLayout``.
+    /// The number of random layout trials to run. The trial that results in the output with the
+    /// fewest swap gates will be selected.
     num_random_trials: usize,
     /// A seed value for the pRNG used internally.
     seed: u64,
@@ -143,6 +141,7 @@ pub unsafe extern "C" fn qk_transpiler_pass_standalone_sabre_layout(
         Some(options.seed),
         Vec::new(),
         false,
+        TrialSelection::FewestSwaps,
     )
     .unwrap_or_else(|_| panic!("Sabre layout failed."));
     let out_circuit =

@@ -182,6 +182,7 @@ pub fn layout_stage(
                 seed,
                 Vec::new(),
                 false,
+                sabre::TrialSelection::FewestSwaps,
             )?;
             *dag = result;
             *transpile_layout =
@@ -206,6 +207,7 @@ pub fn layout_stage(
                 seed,
                 Vec::new(),
                 false,
+                sabre::TrialSelection::TwoQubitCost,
             )?;
             *dag = result;
             *transpile_layout =
@@ -229,6 +231,7 @@ pub fn layout_stage(
             seed,
             Vec::new(),
             false,
+            sabre::TrialSelection::TwoQubitCost,
         )?;
         *dag = result;
         *transpile_layout =
@@ -264,6 +267,7 @@ pub fn routing_stage(
                 5,
                 seed,
                 Some(true),
+                sabre::TrialSelection::FewestSwaps,
             )?;
             *dag = out_dag;
             let routing_permutation =

@@ -23,6 +23,7 @@ use pyo3::wrap_pyfunction;
 pub(crate) use heuristic::Heuristic;
 pub(crate) use heuristic::SetScaling;
 pub use layout::sabre_layout_and_routing;
+pub use route::TrialSelection;
 pub(crate) use route::sabre_routing;
 
 pub fn sabre(m: &Bound<PyModule>) -> PyResult<()> {

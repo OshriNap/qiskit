@@ -1,29 +1,31 @@
 ---
 features_transpiler:
   - |
-    :class:`.SabreLayout` and :class:`.SabreSwap` now choose between their layout and routing
-    trials by an estimate of the two-qubit cost of the final circuit, instead of by the number of
-    inserted swaps alone, when they run at least 10 trials of that kind (as the preset pass
-    managers do at optimization levels 2 and 3).  Each routed trial is scored by its expected
-    two-qubit gate count and two-qubit depth after two-qubit block resynthesis: every swap costs
-    three two-qubit gates, and consecutive two-qubit operations on the same pair of qubits are
-    merged into one block of at most three gates.  The trial with the fewest swaps, which is the
-    trial chosen before, is the reference: among the trials whose estimated two-qubit gate count is
-    no higher than the reference's, the one with the lowest estimated two-qubit depth is chosen.
-    Each choice (between routing trials, then between layout trials) is therefore never estimated
-    to need more two-qubit gates than its own fewest-swaps trial.  This typically reduces the
-    two-qubit depth of routed circuits.  For example, at optimization level 2 on a 193-qubit
-    heavy-hex target, the two-qubit depth of a 100-qubit QFT circuit falls by about 8% and that of
-    a 100-qubit square-lattice Heisenberg circuit by about 2%.
+    :class:`.SabreLayout` and :class:`.SabreSwap` have a new ``trial_selection`` argument that sets
+    how they choose between their layout and routing trials.  The default, ``"swaps"``, keeps the
+    trial with the fewest inserted swaps, as before.  With ``"two_qubit_cost"``, each routed trial
+    is scored by its expected two-qubit gate count and two-qubit depth after two-qubit block
+    resynthesis: every swap costs three two-qubit gates, and consecutive two-qubit operations on
+    the same pair of qubits are merged into one block of at most three gates.  The trial with the
+    fewest swaps is the reference: among the trials whose estimated two-qubit gate count is no
+    higher than the reference's, the one with the lowest estimated two-qubit depth is chosen.  Each
+    choice (between routing trials, then between layout trials) is therefore never estimated to
+    need more two-qubit gates than its own fewest-swaps trial.  This suits pipelines that
+    resynthesize two-qubit blocks after routing.  For example::
+
+        from qiskit.transpiler import CouplingMap
+        from qiskit.transpiler.passes import SabreSwap
+
+        routing = SabreSwap(
+            CouplingMap.from_line(5), heuristic="decay", trials=20, trial_selection="two_qubit_cost"
+        )
 upgrade_transpiler:
   - |
-    The output of :class:`.SabreLayout` and :class:`.SabreSwap` for a fixed seed changes when they
-    run 10 or more layout or routing trials, because the trial is now chosen by its estimated
-    two-qubit cost (see the new features).  This affects optimization levels 2 and 3 of the preset
-    pass managers whenever Sabre runs.  With fewer than 10 trials, as at optimization levels 0 and
-    1 of the preset pass managers (which do not resynthesize two-qubit blocks after routing, so that
-    every swap stays three two-qubit gates), the trial with the fewest swaps is still chosen and the
-    output is unchanged.  Level 1 of the C API's ``qk_transpile`` runs 20 Sabre trials, so its
-    output changes too, as does the output at levels 0 and 1 when the ``sabre_all_threads`` option
-    or the ``QISKIT_SABRE_ALL_THREADS`` environment variable raises the number of trials to 10 or
-    more.
+    Optimization levels 2 and 3 of the preset pass managers, which resynthesize two-qubit blocks
+    after routing, now run :class:`.SabreLayout` and :class:`.SabreSwap` with
+    ``trial_selection="two_qubit_cost"``, and so does the C API's ``qk_transpile`` at levels 2 and
+    3.  Their output for a fixed seed changes, and it typically has a lower two-qubit depth.  For
+    example, at optimization level 2 on a 193-qubit heavy-hex target, the two-qubit depth of a
+    100-qubit QFT circuit falls by about 8% and that of a 100-qubit square-lattice Heisenberg
+    circuit by about 2%.  Optimization levels 0 and 1, and the passes used on their own, still
+    choose the trial with the fewest swaps, and their output is unchanged.

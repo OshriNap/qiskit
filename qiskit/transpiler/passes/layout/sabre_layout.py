@@ -56,13 +56,12 @@ class SabreLayout(TransformationPass):
     objects and just find an initial layout and set that on the property set. This is
     done because by default the pass will run parallel seed trials with different random
     seeds for selecting the random initial layout and then selecting the best routed output.
-    With fewer than 10 layout trials, that is the output which results in the least number of
-    swap gates needed. With 10 or more, each routed output is scored by an estimate of its
-    two-qubit gate count and two-qubit depth after two-qubit block resynthesis, and among the
+    By default, that is the output which results in the least number of swap gates needed. With
+    ``trial_selection="two_qubit_cost"``, each routed output is instead scored by an estimate of
+    its two-qubit gate count and two-qubit depth after two-qubit block resynthesis, and among the
     outputs whose estimated gate count is no higher than that of the output with the least
     number of swap gates, the one with the lowest estimated depth is selected. The routing
-    trials of each layout trial are chosen between in the same way, depending on
-    ``swap_trials`` (see :class:`.SabreSwap`).
+    trials of each layout trial are chosen between in the same way (see :class:`.SabreSwap`).
 
     You can use the ``routing_pass`` argument to have this pass operate as a typical
     layout pass. When specified this will use the specified routing pass to select an
@@ -115,6 +114,8 @@ class SabreLayout(TransformationPass):
         swap_trials=None,
         layout_trials=None,
         skip_routing=False,
+        *,
+        trial_selection="swaps",
     ):
         """SabreLayout initializer.
 
@@ -140,10 +141,8 @@ class SabreLayout(TransformationPass):
                 with the ``routing_pass`` argument and an error will be raised
                 if both are used.
             layout_trials (int): The number of random seed trials to run
-                layout with. When > 1 the best trial is selected: the one that
-                results in the output with the fewest swap gates if this is
-                less than 10, otherwise the one chosen by its estimated
-                two-qubit cost (see above). If this is not specified
+                layout with. When > 1 the best trial is selected, as set by
+                ``trial_selection``. If this is not specified
                 (and ``routing_pass`` is not set) then the number of local
                 physical CPUs will be used as the default value. This option is
                 mutually exclusive with the ``routing_pass`` argument and an error
@@ -155,10 +154,17 @@ class SabreLayout(TransformationPass):
                 will be set in the property set. This is a tradeoff to run custom
                 routing with multiple layout trials, as using this option will cause
                 SabreLayout to run the routing stage internally but not use that result.
+            trial_selection (str): How to choose between the layout trials and, in each of
+                them, between the routing trials. ``"swaps"`` (the default) keeps the trial
+                with the fewest inserted swaps. ``"two_qubit_cost"`` chooses by the estimated
+                two-qubit gate count and depth after two-qubit block resynthesis (see above);
+                it suits pipelines that resynthesize two-qubit blocks after routing, such as
+                optimization levels 2 and 3 of the preset pass managers.
 
         Raises:
             TranspilerError: If both ``routing_pass`` and ``swap_trials`` or
-            both ``routing_pass`` and ``layout_trials`` are specified
+                both ``routing_pass`` and ``layout_trials`` are specified, or if
+                ``trial_selection`` is not ``"swaps"`` or ``"two_qubit_cost"``.
         """
         super().__init__()
         if isinstance(coupling_map, Target) and not isinstance(coupling_map, _FakeTarget):
@@ -188,6 +194,11 @@ class SabreLayout(TransformationPass):
         self.swap_trials = default_num_processes() if swap_trials is None else swap_trials
         self.layout_trials = default_num_processes() if layout_trials is None else layout_trials
         self.skip_routing = skip_routing
+        if trial_selection not in ("swaps", "two_qubit_cost"):
+            raise TranspilerError(
+                f"Unknown trial selection '{trial_selection}': expected 'swaps' or 'two_qubit_cost'."
+            )
+        self.trial_selection = trial_selection
 
     @property
     def coupling_map(self):
@@ -291,6 +302,7 @@ class SabreLayout(TransformationPass):
             seed=self.seed,
             partial_layouts=starting_layouts,
             skip_routing=self.skip_routing,
+            trial_selection=self.trial_selection,
         )
         sabre_stop = time.perf_counter()
         logger.debug(

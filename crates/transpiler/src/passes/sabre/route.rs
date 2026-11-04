@@ -172,12 +172,11 @@ impl RoutingResult<'_> {
 
     /// Estimate the two-qubit cost of the routed circuit (top level only, without rebuilding it).
     ///
-    /// Each two-qubit operation is weighted by the number of CX-equivalent gates it needs (see
-    /// [CostModel]), and each routing swap by 3.  Since optimization levels 2 and 3 of the preset
-    /// pass managers resynthesize two-qubit blocks after routing (see
-    /// [COST_SELECTION_MIN_TRIALS]), each maximal run of consecutive two-qubit operations on the
-    /// same pair of physical qubits is treated as a single block whose cost is the sum of its
-    /// weights, capped at 3 (any two-qubit unitary needs at most 3).  Single-qubit operations are
+    /// Each two-qubit operation is weighted by the number of native two-qubit gates it needs (see
+    /// [CostModel]), and each routing swap by 3.  Since the estimate assumes that two-qubit blocks
+    /// are resynthesized after routing (see [TrialSelection]), each maximal run of consecutive
+    /// two-qubit operations on the same pair of physical qubits is treated as a single block whose
+    /// cost is the sum of its weights, capped at 3 (any two-qubit unitary needs at most 3).  Single-qubit operations are
     /// free, and the operations that only synchronize their qubits end the open blocks there.
     ///
     /// The result is an estimate of the two-qubit gate count and of the two-qubit depth (the
@@ -443,8 +442,8 @@ impl RoutingResult<'_> {
 /// The largest number of two-qubit gates that a single two-qubit block needs.
 const MAX_BLOCK_COST: u32 = 3;
 
-/// The number of CX-equivalent gates of a two-qubit operation in [RoutingResult::two_qubit_cost],
-/// or `None` if the operation only synchronizes its qubits.
+/// The number of native two-qubit gates a two-qubit operation is assumed to need in
+/// [RoutingResult::two_qubit_cost], or `None` if the operation only synchronizes its qubits.
 ///
 /// This must not call into Python (for example `Operation::directive` on a Python-space
 /// instruction): routing trials are scored on worker threads.
@@ -559,18 +558,31 @@ pub struct TwoQubitCost {
     pub swaps: usize,
 }
 
-/// The smallest number of trials for which Sabre chooses between its trials with [choose_trial];
-/// with fewer trials, it keeps the trial with the fewest swaps (the lowest index among ties).
+/// How Sabre chooses between its trials.
 ///
 /// The cost estimate of [RoutingResult::two_qubit_cost] assumes that the two-qubit blocks of the
-/// routed circuit are resynthesized afterwards.  Among the Python preset pass managers, only
-/// optimization levels 2 and 3 do that (their optimization stage resynthesizes two-qubit blocks),
-/// and they are also the ones that run 20 Sabre trials; levels 0 and 1 run 5.  Without that
-/// resynthesis every swap stays three two-qubit gates, so the fewest swaps is then the right choice
-/// for the gate count, and the choice is exactly the one Sabre made before it had a cost estimate.
-/// The trial count is only a proxy for resynthesis, though: the C API's level 1 runs 20 trials
-/// without resynthesizing two-qubit blocks.
-pub const COST_SELECTION_MIN_TRIALS: usize = 10;
+/// routed circuit are resynthesized afterwards, as optimization levels 2 and 3 of the preset pass
+/// managers do.  Without that resynthesis the swaps stay as they are, so the fewest swaps is the
+/// better guide to the gate count; that is the default.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum TrialSelection {
+    /// Keep the trial with the fewest swaps (the lowest index among ties).
+    #[default]
+    FewestSwaps,
+    /// Choose with [choose_trial], by the estimated two-qubit cost after block resynthesis.
+    TwoQubitCost,
+}
+
+impl TrialSelection {
+    /// Parse the Python-facing name of a trial selection.
+    pub fn from_name(name: &str) -> Option<Self> {
+        match name {
+            "swaps" => Some(Self::FewestSwaps),
+            "two_qubit_cost" => Some(Self::TwoQubitCost),
+            _ => None,
+        }
+    }
+}
 
 /// Choose the best of several routing results by their estimated two-qubit cost.
 ///
@@ -1370,13 +1382,23 @@ impl State {
     }
 }
 
+/// Parse the Python-facing `trial_selection` argument of the Sabre entry points.
+pub fn trial_selection_from_name(name: &str) -> PyResult<TrialSelection> {
+    TrialSelection::from_name(name).ok_or_else(|| {
+        PyValueError::new_err(format!(
+            "unknown trial selection '{name}': expected 'swaps' or 'two_qubit_cost'"
+        ))
+    })
+}
+
 /// Run Sabre swap on a circuit
 ///
 /// Returns:
 ///     A two-tuple of the newly routed :class:`.DAGCircuit`, and the layout that maps virtual
 ///     qubits to their assigned physical qubits at the *end* of the circuit execution.
 #[pyfunction(name = "sabre_routing")]
-#[pyo3(signature=(dag, target, heuristic, initial_layout, num_trials, seed=None, run_in_parallel=None))]
+#[pyo3(signature=(dag, target, heuristic, initial_layout, num_trials, seed=None, run_in_parallel=None, trial_selection="swaps"))]
+#[allow(clippy::too_many_arguments)]
 pub fn py_sabre_routing(
     dag: &PyDAGCircuit,
     target: &PyRoutingTarget,
@@ -1385,6 +1407,7 @@ pub fn py_sabre_routing(
     num_trials: usize,
     seed: Option<u64>,
     run_in_parallel: Option<bool>,
+    trial_selection: &str,
 ) -> PyResult<(PyDAGCircuit, NLayout)> {
     sabre_routing(
         dag.try_read()?,
@@ -1394,6 +1417,7 @@ pub fn py_sabre_routing(
         num_trials,
         seed,
         run_in_parallel,
+        trial_selection_from_name(trial_selection)?,
     )
     .map(|(out_dag, layout)| {
         // Preserve metadata
@@ -1404,6 +1428,7 @@ pub fn py_sabre_routing(
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn sabre_routing(
     dag: &DAGCircuit,
     target: &PyRoutingTarget,
@@ -1412,6 +1437,7 @@ pub fn sabre_routing(
     num_trials: usize,
     seed: Option<u64>,
     run_in_parallel: Option<bool>,
+    trial_selection: TrialSelection,
 ) -> PyResult<(DAGCircuit, NLayout)> {
     let Some(target) = target.0.as_ref() else {
         // All-to-all coupling.
@@ -1429,21 +1455,23 @@ pub fn sabre_routing(
         seed,
         num_trials,
         run_in_parallel,
+        trial_selection,
     );
     result.rebuild().map(|dag| (dag, result.final_layout))
 }
 
 /// Run (potentially in parallel) several trials of the Sabre routing algorithm on the given
-/// problem and return the best one: as chosen by [choose_trial] if there are at least
-/// [COST_SELECTION_MIN_TRIALS] trials, otherwise the one with the fewest swaps.
+/// problem and return the best one, chosen as `trial_selection` says.
 pub fn swap_map<'a>(
     problem: RoutingProblem<'a>,
     initial_layout: &'_ NLayout,
     seed: Option<u64>,
     num_trials: usize,
     run_in_parallel: Option<bool>,
+    trial_selection: TrialSelection,
 ) -> RoutingResult<'a> {
-    let model = (num_trials >= COST_SELECTION_MIN_TRIALS).then(|| CostModel::new(problem));
+    let model = (trial_selection == TrialSelection::TwoQubitCost && num_trials > 1)
+        .then(|| CostModel::new(problem));
     swap_map_with_model(
         problem,
         initial_layout,
