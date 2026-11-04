@@ -38,7 +38,7 @@ use super::dag::SabreDAG;
 use super::heuristic::Heuristic;
 use super::route::{
     COST_SELECTION_MIN_TRIALS, CostModel, RoutingProblem, RoutingResult, RoutingTarget,
-    TwoQubitCost, choose_trial, swap_map, swap_map_trial, swap_map_with_model,
+    TrialChoice, TwoQubitCost, swap_map, swap_map_trial, swap_map_with_model,
 };
 
 /// Run all the layout trials (in parallel, if `run_in_parallel`), and return the best result.
@@ -74,14 +74,14 @@ fn best_layout_trial<'a>(
     let model = model
         .as_ref()
         .expect("the cost model is built when choosing by cost");
-    let mut trials: Vec<(RoutingResult<'a>, TwoQubitCost)> = trials
-        .map(|(_, (result, cost))| {
+    trials
+        .map(|(index, (result, cost))| {
             let cost = cost.unwrap_or_else(|| result.two_qubit_cost(model));
-            (result, cost)
+            TrialChoice::single(index, cost, result)
         })
-        .collect();
-    let costs = trials.iter().map(|(_, cost)| *cost).collect::<Vec<_>>();
-    trials.swap_remove(choose_trial(&costs)).0
+        .reduce(TrialChoice::empty, TrialChoice::merge)
+        .finish()
+        .0
 }
 
 #[allow(clippy::too_many_arguments)]

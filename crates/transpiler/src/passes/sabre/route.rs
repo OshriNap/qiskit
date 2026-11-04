@@ -596,9 +596,78 @@ pub fn choose_trial(costs: &[TwoQubitCost]) -> usize {
         .expect("the reference trial is always within the limit")
 }
 
+/// The trials that [choose_trial] could still pick, kept while the trials are still arriving.
+///
+/// The final choice depends on the reference (the trial with the fewest swaps) and on which trials
+/// are within its gate count, so it is not known until every trial has been seen.  Of a group of
+/// trials, only the one with the fewest swaps (the lowest index among ties) can still become the
+/// reference.  Any other trial matters only if it could be the best trial within some gate limit,
+/// and it cannot be if another trial needs at most as many gates and comes first in the order of
+/// [choose_trial].  Only the possible reference and the trials not ruled out that way are kept, so
+/// this holds a few routing results instead of all of them, and it can be built by a parallel
+/// reduction.
+pub struct TrialChoice<T> {
+    /// `(index, cost, item)` for every trial that could still be chosen.
+    candidates: Vec<(usize, TwoQubitCost, T)>,
+}
+
+impl<T> TrialChoice<T> {
+    pub fn empty() -> Self {
+        Self {
+            candidates: Vec::new(),
+        }
+    }
+
+    pub fn single(index: usize, cost: TwoQubitCost, item: T) -> Self {
+        Self {
+            candidates: vec![(index, cost, item)],
+        }
+    }
+
+    /// Combine the candidates of two disjoint sets of trials.
+    pub fn merge(mut self, mut other: Self) -> Self {
+        self.candidates.append(&mut other.candidates);
+        let reference = (0..self.candidates.len())
+            .min_by_key(|&i| (self.candidates[i].1.swaps, self.candidates[i].0));
+        // `a` rules `b` out if `a` needs at most as many gates and comes before `b` in the order of
+        // [choose_trial] (shallower; then fewer swaps; then lower index): `a` is then within every
+        // gate limit that `b` is within, and it is preferred to `b`.
+        let order = |c: &(usize, TwoQubitCost, T)| (c.1.depth, c.1.swaps, c.0);
+        let ruled_out = |i: usize| {
+            (0..self.candidates.len()).any(|j| {
+                j != i
+                    && self.candidates[j].1.gates <= self.candidates[i].1.gates
+                    && order(&self.candidates[j]) < order(&self.candidates[i])
+            })
+        };
+        let keep = (0..self.candidates.len())
+            .map(|i| Some(i) == reference || !ruled_out(i))
+            .collect::<Vec<_>>();
+        let mut keep = keep.into_iter();
+        self.candidates.retain(|_| keep.next().unwrap());
+        self
+    }
+
+    /// The item that [choose_trial] picks from all the trials, and its cost.
+    ///
+    /// # Panics
+    ///
+    /// If there were no trials.
+    pub fn finish(mut self) -> (T, TwoQubitCost) {
+        self.candidates.sort_unstable_by_key(|(index, _, _)| *index);
+        let costs = self
+            .candidates
+            .iter()
+            .map(|(_, cost, _)| *cost)
+            .collect::<Vec<_>>();
+        let (_, cost, item) = self.candidates.swap_remove(choose_trial(&costs));
+        (item, cost)
+    }
+}
+
 #[cfg(test)]
 mod test {
-    use super::{TwoQubitCost, choose_trial};
+    use super::{TrialChoice, TwoQubitCost, choose_trial};
 
     fn cost(gates: u32, depth: u32, swaps: usize) -> TwoQubitCost {
         TwoQubitCost {
@@ -631,6 +700,39 @@ mod test {
         let costs = [cost(50, 20, 7), cost(50, 20, 5), cost(50, 20, 5)];
         assert_eq!(choose_trial(&costs), 1);
         assert_eq!(choose_trial(&[cost(7, 3, 2)]), 0);
+    }
+
+    #[test]
+    fn trial_choice_matches_choose_trial_in_any_merge_order() {
+        // Small values make ties in every field common, which is where the order matters.
+        let mut state = 0x9e37_79b9_7f4a_7c15_u64;
+        let mut next = |bound: u64| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state % bound
+        };
+        for _ in 0..20_000 {
+            let n = 1 + next(24) as usize;
+            let costs = (0..n)
+                .map(|_| cost(next(5) as u32, next(5) as u32, next(5) as usize))
+                .collect::<Vec<_>>();
+            let expected = choose_trial(&costs);
+            // Merge in a random binary-tree order, as a parallel reduction might.
+            let mut parts = (0..n)
+                .map(|i| TrialChoice::single(i, costs[i], i))
+                .collect::<Vec<_>>();
+            while parts.len() > 1 {
+                let i = next(parts.len() as u64) as usize;
+                let a = parts.remove(i);
+                let j = next(parts.len() as u64) as usize;
+                let b = parts.remove(j);
+                parts.push(if next(2) == 0 { a.merge(b) } else { b.merge(a) });
+            }
+            let (chosen, chosen_cost) = parts.pop().unwrap().merge(TrialChoice::empty()).finish();
+            assert_eq!(chosen, expected, "costs {costs:?}");
+            assert_eq!(chosen_cost, costs[expected]);
+        }
     }
 }
 
@@ -1386,15 +1488,15 @@ pub fn swap_map_with_model<'a>(
             .expect("must have at least one trial");
         return (result, None);
     };
-    let mut trials: Vec<(RoutingResult<'a>, TwoQubitCost)> = trials
-        .map(|seed| {
+    let (result, cost) = trials
+        .enumerate()
+        .map(|(index, seed)| {
             let result = swap_map_trial(problem, initial_layout, seed);
             let cost = result.two_qubit_cost(model);
-            (result, cost)
+            TrialChoice::single(index, cost, result)
         })
-        .collect();
-    let costs = trials.iter().map(|(_, cost)| *cost).collect::<Vec<_>>();
-    let (result, cost) = trials.swap_remove(choose_trial(&costs));
+        .reduce(TrialChoice::empty, TrialChoice::merge)
+        .finish();
     (result, Some(cost))
 }
 
