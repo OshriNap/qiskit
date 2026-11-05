@@ -685,7 +685,8 @@ This routing algorithm runs with threaded parallelism to consider several differ
 for routing.  At optimization levels 0 and 1 it chooses the one that minimizes the number of
 inserted swaps.  At levels 2 and 3, which resynthesize two-qubit blocks after routing, it chooses by
 the estimated two-qubit gate count and depth after that resynthesis (see the ``trial_selection``
-argument of :class:`.SabreSwap`).
+argument of :class:`.SabreSwap`), except with a Clifford+T basis, whose pipeline does not
+resynthesize Clifford-only blocks.
 
 The optimization level affects how many different stochastic seeds are attempted for the full
 routing, and the amount of work done by :class:`.VF2PostLayout` to post-optimize the initial layout.

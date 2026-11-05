@@ -178,6 +178,29 @@ class TestSabreTrialSelection(QiskitTestCase):
         expected = {"two_qubit_cost"} if optimization_level >= 2 else {"swaps"}
         self.assertEqual(selections, expected)
 
+    @data(2, 3)
+    def test_clifford_t_presets_keep_fewest_swaps(self, optimization_level):
+        """The Clifford+T pipeline does not resynthesize Clifford-only blocks after routing, so its
+        levels 2 and 3 keep the fewest-swaps choice."""
+        qc = QuantumCircuit(6)
+        for i, j in ((0, 5), (1, 4), (2, 3), (0, 3), (5, 1), (2, 4)):
+            qc.cx(i, j)
+        qc.t(0)
+        selections = set()
+
+        def callback(pass_, **_):
+            if isinstance(pass_, (SabreLayout, SabreSwap)):
+                selections.add(pass_.trial_selection)
+
+        pm = generate_preset_pass_manager(
+            optimization_level=optimization_level,
+            coupling_map=CouplingMap.from_line(6),
+            basis_gates=["cx", "h", "s", "sdg", "t", "tdg", "x", "z"],
+            seed_transpiler=1,
+        )
+        pm.run(qc, callback=callback)
+        self.assertEqual(selections, {"swaps"})
+
     @data(1, 2, 3)
     def test_full_pipeline_is_exact(self, optimization_level):
         """The preset pipelines, with the trials they choose, still produce an equivalent circuit."""

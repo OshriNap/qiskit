@@ -429,7 +429,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
                 heuristic="decay",
                 seed=seed_transpiler,
                 trials=trial_count,
-                trial_selection="two_qubit_cost",
+                trial_selection=_trial_selection(pass_manager_config),
             )
             return common.generate_routing_passmanager(
                 routing_pass,
@@ -447,7 +447,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
                 heuristic="decay",
                 seed=seed_transpiler,
                 trials=trial_count,
-                trial_selection="two_qubit_cost",
+                trial_selection=_trial_selection(pass_manager_config),
             )
             return common.generate_routing_passmanager(
                 routing_pass,
@@ -804,7 +804,7 @@ class DefaultLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
-                trial_selection="two_qubit_cost",
+                trial_selection=_trial_selection(pass_manager_config),
             )
             layout.append(
                 ConditionalController(
@@ -837,7 +837,7 @@ class DefaultLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
-                trial_selection="two_qubit_cost",
+                trial_selection=_trial_selection(pass_manager_config),
             )
             layout.append(
                 ConditionalController(
@@ -967,7 +967,7 @@ class SabreLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
-                trial_selection="two_qubit_cost",
+                trial_selection=_trial_selection(pass_manager_config),
             )
         elif optimization_level == 3:
             trial_count = _get_trial_count(20)
@@ -979,7 +979,7 @@ class SabreLayoutPassManager(PassManagerStagePlugin):
                 swap_trials=trial_count,
                 layout_trials=trial_count,
                 skip_routing=pass_manager_config.routing_method not in (None, "default", "sabre"),
-                trial_selection="two_qubit_cost",
+                trial_selection=_trial_selection(pass_manager_config),
             )
         else:
             raise TranspilerError(f"Invalid optimization level: {optimization_level}")
@@ -998,6 +998,18 @@ class SabreLayoutPassManager(PassManagerStagePlugin):
         embed = common.generate_embed_passmanager(coupling_map)
         layout.append(ConditionalController(embed.to_flow_controller(), condition=_swap_mapped))
         return layout
+
+
+def _trial_selection(pass_manager_config):
+    """How Sabre chooses between its trials at optimization levels 2 and 3.
+
+    These levels resynthesize two-qubit blocks after routing, so Sabre can choose by the estimated
+    two-qubit cost after that resynthesis.  The Clifford+T pipeline does not resynthesize
+    Clifford-only blocks (such as a routing swap next to a CX), so it keeps the fewest swaps.
+    """
+    if common.is_clifford_t_basis(pass_manager_config.basis_gates, pass_manager_config.target):
+        return "swaps"
+    return "two_qubit_cost"
 
 
 def _get_trial_count(default_trials=5):

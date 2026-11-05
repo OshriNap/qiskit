@@ -28,4 +28,6 @@ upgrade_transpiler:
     example, at optimization level 2 on a 193-qubit heavy-hex target, the two-qubit depth of a
     100-qubit QFT circuit falls by about 8% and that of a 100-qubit square-lattice Heisenberg
     circuit by about 2%.  Optimization levels 0 and 1, and the passes used on their own, still
-    choose the trial with the fewest swaps, and their output is unchanged.
+    choose the trial with the fewest swaps, and their output is unchanged.  So does the Clifford+T
+    pipeline, used for a Clifford+T basis, at every level: it does not resynthesize Clifford-only
+    blocks such as routing swaps.
